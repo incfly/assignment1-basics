@@ -2,6 +2,8 @@ from io import BytesIO
 from typing import BinaryIO
 import os
 import multiprocessing as mp
+import regex as re
+from collections import defaultdict
 
 
 def find_chunk_boundaries(
@@ -69,9 +71,8 @@ def get_string_literal_chunk_bounds(
         boundaries = find_chunk_boundaries(f, desired_num_chunks, special_token.encode("utf-8"))
     return data, list(zip(boundaries[:-1], boundaries[1:]))
 
-
 def get_file_chunk_bounds(
-    filename: str = "../data/tiny-1000.txt",
+    filename: str = "./data/tiny-1000.txt",
     desired_num_chunks: int = 4,
     special_token: bytes = b"<|endoftext|>",
 ):
@@ -82,6 +83,8 @@ def get_file_chunk_bounds(
     return data, list(zip(boundaries[:-1], boundaries[1:]))
 
 
+endoftext_token = b'<|endoftext|>'
+
 def worker(bounds):
     # example work: count characters
     start, end = bounds
@@ -89,13 +92,26 @@ def worker(bounds):
     pid = os.getpid()
     preview = share[:80].decode("utf-8", errors="ignore").replace("\n", "\\n")
     print(f"process {pid} is getting bytes[{start}:{end}] {preview!r}")
-    return len(share)
+
+    PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
+
+    out = defaultdict(int)
+    for doc in share.split(endoftext_token):
+        doc_text = doc.decode("utf-8", errors="ignore")
+        for t in re.findall(PAT, doc_text):
+            out[t] += 1
+    return out
 
 
 def run_with_pool(shared_data, bounds_list):
     ctx = mp.get_context("fork")
     with ctx.Pool(4, initializer=init_shared_string, initargs=(shared_data,)) as p:
-        return p.map(worker, bounds_list)
+        results = p.map(worker, bounds_list)
+        merged = {}
+        for d in results:
+            for k, v in d.items():
+                merged[k] = merged.get(k, 0) + v
+        return merged
 
 
 if __name__ == "__main__":
@@ -105,4 +121,6 @@ if __name__ == "__main__":
 
     shared_data, bounds_list = get_file_chunk_bounds()
     print("tiny-1000 bounds:", bounds_list)
-    print(run_with_pool(shared_data, bounds_list))
+    merged = run_with_pool(shared_data, bounds_list)
+    for k, v in sorted(merged.items(), key=lambda kv: kv[1], reverse=True):
+        print(f'{k} -> {v}')
