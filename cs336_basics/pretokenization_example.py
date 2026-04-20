@@ -49,14 +49,48 @@ def find_chunk_boundaries(
     return sorted(set(chunk_boundaries))
 
 
-## Usage
-with open(..., "rb") as f:
-    num_processes = 4
-    boundaries = find_chunk_boundaries(f, num_processes, b"<|endoftext|>")
+def get_chunks(filename):
+    """
+    Purpose of this func and previous together is not to remove the speical token but to chunk the work evenly then
+    we can distribute among workers.
+    """
+    out = []
+    with open(filename, "rb") as f:
+        num_processes = 4
+        boundaries = find_chunk_boundaries(f, num_processes, b"<|endoftext|>")
+    
+        # The following is a serial implementation, but you can parallelize this
+        # by sending each start/end pair to a set of processes.
+        for start, end in zip(boundaries[:-1], boundaries[1:]):
+            f.seek(start)
+            chunk = f.read(end - start).decode("utf-8", errors="ignore")
+            out.append(chunk)
+            # Run pre-tokenization on your chunk and store the counts for each pre-token
+    return out
 
-    # The following is a serial implementation, but you can parallelize this
-    # by sending each start/end pair to a set of processes.
-    for start, end in zip(boundaries[:-1], boundaries[1:]):
-        f.seek(start)
-        chunk = f.read(end - start).decode("utf-8", errors="ignore")
-        # Run pre-tokenization on your chunk and store the counts for each pre-token
+
+import multiprocessing as mp
+import os
+
+
+def init_worker(s):
+    global data
+    data = s
+
+
+def worker(bounds):
+    # example work: count characters
+    start, end = bounds
+    share = data[start:end]
+    pid = os.getpid()
+    print(f'process {pid} is getting data {share}')
+    return len(share)
+
+
+if __name__ == "__main__":
+    ctx = mp.get_context('fork')
+    shared_data = 'abc$123456$7890$def'
+    # chunks = get_chunks('../data/tiny-1000.txt')
+    with ctx.Pool(4, initializer=init_worker, initargs=(shared_data,)) as p:
+        results = p.map(worker, ['a', 'ab', '123', '1234', '12345'])
+    print(results)
