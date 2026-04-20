@@ -1,5 +1,7 @@
-import os
+from io import BytesIO
 from typing import BinaryIO
+import os
+import multiprocessing as mp
 
 
 def find_chunk_boundaries(
@@ -49,33 +51,35 @@ def find_chunk_boundaries(
     return sorted(set(chunk_boundaries))
 
 
-def get_chunks(filename):
-    """
-    Purpose of this func and previous together is not to remove the speical token but to chunk the work evenly then
-    we can distribute among workers.
-    """
-    out = []
-    with open(filename, "rb") as f:
-        num_processes = 4
-        boundaries = find_chunk_boundaries(f, num_processes, b"<|endoftext|>")
-    
-        # The following is a serial implementation, but you can parallelize this
-        # by sending each start/end pair to a set of processes.
-        for start, end in zip(boundaries[:-1], boundaries[1:]):
-            f.seek(start)
-            chunk = f.read(end - start).decode("utf-8", errors="ignore")
-            out.append(chunk)
-            # Run pre-tokenization on your chunk and store the counts for each pre-token
-    return out
-
-
-import multiprocessing as mp
-import os
-
-
-def init_worker(s):
+def init_shared_string(s):
+    '''
+    Init the worker with entire training data corpus. Not the best but ok.
+    '''
     global data
     data = s
+
+
+def get_string_literal_chunk_bounds(
+    text: str = "abc$123456$7890$def",
+    special_token: str = "$",
+    desired_num_chunks: int = 4,
+):
+    data = text.encode("utf-8")
+    with BytesIO(data) as f:
+        boundaries = find_chunk_boundaries(f, desired_num_chunks, special_token.encode("utf-8"))
+    return data, list(zip(boundaries[:-1], boundaries[1:]))
+
+
+def get_file_chunk_bounds(
+    filename: str = "../data/tiny-1000.txt",
+    desired_num_chunks: int = 4,
+    special_token: bytes = b"<|endoftext|>",
+):
+    with open(filename, "rb") as f:
+        boundaries = find_chunk_boundaries(f, desired_num_chunks, special_token)
+        f.seek(0)
+        data = f.read()
+    return data, list(zip(boundaries[:-1], boundaries[1:]))
 
 
 def worker(bounds):
@@ -83,14 +87,22 @@ def worker(bounds):
     start, end = bounds
     share = data[start:end]
     pid = os.getpid()
-    print(f'process {pid} is getting data {share}')
+    preview = share[:80].decode("utf-8", errors="ignore").replace("\n", "\\n")
+    print(f"process {pid} is getting bytes[{start}:{end}] {preview!r}")
     return len(share)
 
 
+def run_with_pool(shared_data, bounds_list):
+    ctx = mp.get_context("fork")
+    with ctx.Pool(4, initializer=init_shared_string, initargs=(shared_data,)) as p:
+        return p.map(worker, bounds_list)
+
+
 if __name__ == "__main__":
-    ctx = mp.get_context('fork')
-    shared_data = 'abc$123456$7890$def'
-    # chunks = get_chunks('../data/tiny-1000.txt')
-    with ctx.Pool(4, initializer=init_worker, initargs=(shared_data,)) as p:
-        results = p.map(worker, ['a', 'ab', '123', '1234', '12345'])
-    print(results)
+    # shared_data, bounds_list = get_string_literal_chunk_bounds()
+    # print("tiny literal bounds:", bounds_list)
+    # print(run_with_pool(shared_data, bounds_list))
+
+    shared_data, bounds_list = get_file_chunk_bounds()
+    print("tiny-1000 bounds:", bounds_list)
+    print(run_with_pool(shared_data, bounds_list))
