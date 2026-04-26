@@ -12,7 +12,11 @@ then BPE merge within pre-token
     not across boundary, `william shakespear` would never be merged
     for efficiency, only look at the dict.
 
-MergeInfo where storing index for faster merge iteration
+merge algo crucial
+    MergeInfo where storing index for faster merge iteration
+    Record index of the thing itself, so update both before and after
+        `ad`, so `bad` and `advertise` both udpate `ad`.
+        not just after.
 
 ## TODO
 
