@@ -56,6 +56,8 @@ def find_chunk_boundaries(
 def init_shared_string(s):
     '''
     Init the worker with entire training data corpus. Not the best but ok.
+    NOTE: Good to know, python async io only helps with io concurrency not compute.
+    global mem sharing data, with compute pool (diff process). This is to work around GIL issue.
     '''
     global data
     data = s
@@ -86,7 +88,12 @@ def get_file_chunk_bounds(
 endoftext_token = b'<|endoftext|>'
 
 def worker(bounds):
-    # example work: count characters
+    '''
+    NOTE: Worker takes a slice of boundaries. working on them in a separate process.
+    We first split each byte chunk on the special token, then decode each piece to
+    text and run the GPT-style regex pre-tokenizer. The output frequency map is
+    keyed by Python strings (the matched pre-tokens), not raw UTF-8 bytes.
+    '''
     start, end = bounds
     share = data[start:end]
     pid = os.getpid()
@@ -104,6 +111,9 @@ def worker(bounds):
 
 
 def run_with_pool(shared_data, bounds_list):
+    '''
+    NOTE: map reduce fashion. worker emit frequency map, main process consolidate into merged dict.
+    '''
     ctx = mp.get_context("fork")
     with ctx.Pool(4, initializer=init_shared_string, initargs=(shared_data,)) as p:
         results = p.map(worker, bounds_list)
