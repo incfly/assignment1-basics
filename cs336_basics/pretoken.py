@@ -1,9 +1,15 @@
-from io import BytesIO
 from typing import BinaryIO
 import os
 import multiprocessing as mp
 import regex as re
 from collections import defaultdict
+import sys
+
+type ChunkBounds = tuple[int, int]
+type ChunkBoundsList = list[ChunkBounds]
+type FrequencyMap = dict[bytes, int]
+
+data: bytes
 
 
 def find_chunk_boundaries(
@@ -53,7 +59,7 @@ def find_chunk_boundaries(
     return sorted(set(chunk_boundaries))
 
 
-def init_shared_string(s):
+def _init_shared_string(s: bytes) -> None:
     '''
     Init the worker with entire training data corpus. Not the best but ok.
     NOTE: Good to know, python async io only helps with io concurrency not compute.
@@ -63,21 +69,11 @@ def init_shared_string(s):
     data = s
 
 
-def get_string_literal_chunk_bounds(
-    text: str = "abc$123456$7890$def",
-    special_token: str = "$",
-    desired_num_chunks: int = 4,
-):
-    data = text.encode("utf-8")
-    with BytesIO(data) as f:
-        boundaries = find_chunk_boundaries(f, desired_num_chunks, special_token.encode("utf-8"))
-    return data, list(zip(boundaries[:-1], boundaries[1:]))
-
-def get_file_chunk_bounds(
-    filename: str = "./data/tiny-1000.txt",
+def _get_file_chunk_bounds(
+    filename: str,
     desired_num_chunks: int = 4,
     special_token: bytes = b"<|endoftext|>",
-):
+) -> tuple[bytes, ChunkBoundsList]:
     with open(filename, "rb") as f:
         boundaries = find_chunk_boundaries(f, desired_num_chunks, special_token)
         f.seek(0)
@@ -87,12 +83,13 @@ def get_file_chunk_bounds(
 
 endoftext_token = b'<|endoftext|>'
 
-def worker(bounds):
+def _pretoken_worker(bounds: ChunkBounds) -> FrequencyMap:
     '''
     NOTE: Worker takes a slice of boundaries. working on them in a separate process.
     We first split each byte chunk on the special token, then decode each piece to
     text and run the GPT-style regex pre-tokenizer. The output frequency map is
-    keyed by Python strings (the matched pre-tokens), not raw UTF-8 bytes.
+    keyed by each matched pre-token encoded as UTF-8 bytes, which is the right
+    representation for byte-level BPE training.
     '''
     start, end = bounds
     share = data[start:end]
@@ -102,35 +99,45 @@ def worker(bounds):
 
     PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
-    out = defaultdict(int)
+    out: defaultdict[bytes, int] = defaultdict(int)
     for doc in share.split(endoftext_token):
         doc_text = doc.decode("utf-8", errors="ignore")
         for t in re.findall(PAT, doc_text):
-            out[t] += 1
-    return out
+            out[t.encode("utf-8")] += 1
+    return dict(out)
 
 
-def run_with_pool(shared_data, bounds_list):
+def _pretoken_with_pool(shared_data: bytes, bounds_list: ChunkBoundsList) -> FrequencyMap:
     '''
     NOTE: map reduce fashion. worker emit frequency map, main process consolidate into merged dict.
     '''
     ctx = mp.get_context("fork")
-    with ctx.Pool(4, initializer=init_shared_string, initargs=(shared_data,)) as p:
-        results = p.map(worker, bounds_list)
-        merged = {}
+    with ctx.Pool(4, initializer=_init_shared_string, initargs=(shared_data,)) as p:
+        results = p.map(_pretoken_worker, bounds_list)
+        merged: FrequencyMap = {}
         for d in results:
             for k, v in d.items():
                 merged[k] = merged.get(k, 0) + v
         return merged
 
 
-if __name__ == "__main__":
-    # shared_data, bounds_list = get_string_literal_chunk_bounds()
-    # print("tiny literal bounds:", bounds_list)
-    # print(run_with_pool(shared_data, bounds_list))
+def init_token_freqmap(
+    filename: str,
+    desired_num_chunks: int = 4,
+    special_token: bytes = b"<|endoftext|>",
+) -> FrequencyMap:
+    shared_data, bounds_list = _get_file_chunk_bounds(
+        filename=filename,
+        desired_num_chunks=desired_num_chunks,
+        special_token=special_token,
+    )
+    return _pretoken_with_pool(shared_data, bounds_list)
 
-    shared_data, bounds_list = get_file_chunk_bounds()
-    print("tiny-1000 bounds:", bounds_list)
-    merged = run_with_pool(shared_data, bounds_list)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise SystemExit(f"usage: {sys.argv[0]} <filename>")
+
+    merged = init_token_freqmap(sys.argv[1])
     for k, v in sorted(merged.items(), key=lambda kv: kv[1], reverse=True):
-        print(f'{k} -> {v}')
+        print(f"{k!r} -> {v}")
