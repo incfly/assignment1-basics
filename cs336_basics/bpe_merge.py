@@ -1,20 +1,44 @@
-from pretoken import init_token_freqmap, FrequencyMap
+from dataclasses import dataclass, field
 
-from itertools import islice
+try:
+    from cs336_basics.pretoken import init_token_freqmap
+except ImportError:
+    from pretoken import init_token_freqmap
+
+type Vocab = dict[int, bytes]
+type BytePair = tuple[int, int]
 
 
-def bpe_merge():
-    freq_map = init_token_freqmap("./data/tiny-1000.txt")
-    # Also the same type, even though the key is always sized 2. But it's ok.
-    byte_pair: FrequencyMap = {}
+@dataclass
+class MergeInfo:
+    freq: int = 0
+    # Placeholder for future occurrence bookkeeping.
+    indices: list[int] = field(default_factory=list)
+
+
+def bpe_merge(filename: str = "./data/tiny-1000.txt") -> tuple[Vocab, dict[BytePair, MergeInfo]]:
+    vocab: Vocab = {}
+    next_vocab_int = 257
+
+    freq_map = init_token_freqmap(filename)
+    byte_pair: dict[BytePair, MergeInfo] = {}
     for token, count in freq_map.items():
-        for b in zip(token[:-1], token[1:]):
-            byte_pair[b] = byte_pair.get(b, 0) + 1
+        for pair in zip(token[:-1], token[1:]):
+            info = byte_pair.get(pair, MergeInfo())
+            info.freq += 1
+            # TODO: how about the indices? need index + global str? or maybe index the token first and the two int?
 
-    # get the highest byte pair.
-    max_byte_pair = bytes(max(byte_pair, key=byte_pair.get))
-    print(max_byte_pair.decode('utf-8'))
-    
+    if not byte_pair:
+        return vocab, byte_pair
+
+    max_byte_pair_key = max(byte_pair, key=lambda pair: byte_pair[pair].freq)
+    max_byte_pair = bytes(max_byte_pair_key)
+    print(max_byte_pair.decode("utf-8", errors="replace"))
+
+    vocab[next_vocab_int] = max_byte_pair
+    next_vocab_int += 1
+    return vocab, byte_pair
+
 
 if __name__ == "__main__":
     bpe_merge()

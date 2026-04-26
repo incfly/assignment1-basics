@@ -12,6 +12,8 @@ then BPE merge within pre-token
     not across boundary, `william shakespear` would never be merged
     for efficiency, only look at the dict.
 
+MergeInfo where storing index for faster merge iteration
+
 ## TODO
 
 >  When encoding text, it’s often desirable to treat some strings as “special tokens” that should
