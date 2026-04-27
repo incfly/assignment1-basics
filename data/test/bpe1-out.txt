@@ -1,0 +1,4 @@
+vocab:
+pairs:
+ab: 2
+ba: 1

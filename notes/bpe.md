@@ -17,6 +17,10 @@ merge algo crucial
     Record index of the thing itself, so update both before and after
         `ad`, so `bad` and `advertise` both udpate `ad`.
         not just after.
+    non overlapping merge   
+        `aaaa` -> `aa` `aa` but should now be `aa, aa` token, produce `aa, aa` together as a new token
+        but not `aa, a` as next token. as that does not make sense.
+        need special care to fix this.
 
 ## TODO
 

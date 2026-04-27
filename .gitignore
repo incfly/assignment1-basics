@@ -163,7 +163,6 @@ cython_debug/
 *.zipdata/
 
 # my own
-data/
 .DS_Store
 
 .vscode/

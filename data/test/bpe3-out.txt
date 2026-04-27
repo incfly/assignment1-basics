@@ -1,0 +1,4 @@
+vocab:
+257: aa
+pairs:
+aaaa: 1

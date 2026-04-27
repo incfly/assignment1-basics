@@ -1,0 +1,5 @@
+vocab:
+257: ab
+pairs:
+abab: 1
+zab: 1
