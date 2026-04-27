@@ -21,6 +21,16 @@ merge algo crucial
         `aaaa` -> `aa` `aa` but should now be `aa, aa` token, produce `aa, aa` together as a new token
         but not `aa, a` as next token. as that does not make sense.
         need special care to fix this.
+    not only needs to add but also delete
+        `abab`, `ab:2, ba:1`
+        `ab,ab`, no `ba` anymore! my buggy has this
+        but not necessarily complete remove. `ba` can still exists
+            only delete when frequency is 0.
+    get next destroyed is tricky because not just next byte
+        can be `ab<foo>` the whole `b<foo>` used to be toegether.
+        using longest sequence is wrong! bpe is split not just
+        [e.g.](https://pastila.nl/?007427fd/c242125bc050b22791155a95d2dcd6d2#UdW4BCiyZeIkG29/cxNiRA==GCM)
+
 
 ## TODO
 

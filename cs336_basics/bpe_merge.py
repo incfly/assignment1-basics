@@ -7,6 +7,39 @@ try:
 except ImportError:
     from pretoken import init_token_freqmap
 
+
+type Vocab = dict[int, bytes]
+type BytePair = tuple[int, int]
+
+
+@dataclass
+class WordDict:
+    toint: dict[bytes, int] = field(default_factory=dict) # diff with {}? 
+    toword: dict[int, bytes] = field(default_factory=dict)
+
+def resolve_token(vocab: Vocab, b: bytes) -> bytes:
+    best: bytes | None = None
+    for token_bytes in vocab.values():
+        if b.startswith(token_bytes):
+            if best is None or len(token_bytes) > len(best):
+                best = token_bytes
+    if best is None:
+        raise ValueError(f"No token in vocab matches prefix of {b!r}")
+    return best
+
+@dataclass
+class Index:
+    word_id: int
+    self_ind: int
+    self_len: int
+
+    def destroyed_pair(self, wd:WordDict, vocab: Vocab) -> bytes:
+        word = wd.toword[self.word_id]
+        start = self.self_ind
+        tok = resolve_token(vocab, word[start + self.self_len:])
+        total_len = self.self_len + len(tok)
+        return word[start : start + total_len]
+
 @dataclass
 class MergeInfo:
     freq: int = 0
@@ -16,21 +49,21 @@ class MergeInfo:
     # token itself, for both before and after. mistake: only after.
     # TODO: fix this.
     indices: list[tuple[int,int]] = field(default_factory=list)
-
-
-type Vocab = dict[int, bytes]
-type BytePair = tuple[int, int]
+    indexv2: list[Index] = field(default_factory=list)
 
 
 class BytePairMap(dict[BytePair, MergeInfo]):
     def max_pair(self) -> BytePair:
         return max(self, key=lambda pair: self[pair].freq)
-
-
-@dataclass
-class WordDict:
-    toint: dict[bytes, int] = field(default_factory=dict) # diff with {}? 
-    toword: dict[int, bytes] = field(default_factory=dict)
+    
+    def decrement(self, bp: BytePair, freq: int):
+        if self.get(bp) is None:
+            print("panic!")
+            return
+        self[bp].freq -= freq
+        if self[bp].freq == 0:
+            del self[bp]
+            print('delete key')
 
 
 def init_worddict(freq_map: FrequencyMap) -> WordDict:
@@ -54,30 +87,33 @@ def merge(byte_pair_map : BytePairMap,
 
     vocab[next_vocab_int] = max_bytes
     next_vocab_int += 1
+    pair_info = byte_pair_map[max_bytes_key]
+    freq = pair_info.freq
+    # First remove the ones get disappeared due to new representation.
+    for ind in pair_info.indexv2:
+        # the last one byte in the sequence is getting distroyed
+        destroyed = ind.destroyed_pair(wdd, vocab)
+        byte_pair_map.decrement(destroyed, freq)
 
     # Updating the max_byte_pair keys.
-    cur_info = byte_pair_map[max_bytes_key]
-    for ind in cur_info.indices:
-        if ind[1] == -1:
-            continue
+    
+    for ind in pair_info.indexv2:
         # Word.
-        word_id = ind[0]
-        word = wdd.toword[ind[0]]
-
-        next_byte = word[ind[1]]
-        new_byte_ind = ind[1] + 1
-        if new_byte_ind >= len(word):
-            new_byte_ind = -1
-
-        new_bytes = max_bytes + bytes([next_byte])
+        word = wdd.toword[ind.word_id]
+        after = ind.self_ind+1
+        if after >= len(word):
+            continue
+        new_bytes = max_bytes + bytes([word[after]])
         new_info = byte_pair_map.get(new_bytes, MergeInfo())
 
         # ab,c in the word fabc, we see fabc lots of
         new_info.freq += freq_map[word]
 
-        new_info.indices.append((word_id, new_byte_ind))
+        # Index is the same.
+        new_ind = ind
+        new_ind.self_len += 1
+        new_info.indexv2.append(new_ind)
         byte_pair_map[new_bytes] = new_info
-
     return next_vocab_int
 
 
@@ -100,7 +136,8 @@ def bpe_merge(filename: str, merge_times=1) -> tuple[Vocab, BytePairMap]:
             next = i+2
             if next >= len(token):
                 next = -1
-            info.indices.append((wdd.toint[token],next))
+            word_id = wdd.toint[token]
+            info.indexv2.append(Index(word_id=word_id, self_ind=i, self_len=2))
     if not byte_pair_map:
         return vocab, byte_pair_map
 
