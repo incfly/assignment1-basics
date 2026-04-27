@@ -31,6 +31,9 @@ merge algo crucial
         using longest sequence is wrong! bpe is split not just
         [e.g.](https://pastila.nl/?007427fd/c242125bc050b22791155a95d2dcd6d2#UdW4BCiyZeIkG29/cxNiRA==GCM)
 
+what to do, doubly linked list.
+    https://chatgpt.com/c/69ef0184-bde8-83ea-9824-ee1e23290d3f
+
 
 ## TODO
 
