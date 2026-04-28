@@ -92,12 +92,41 @@ def increment_pair(all_pairs: AllPairs, left: Node, right: Node):
     pair_info.record(left)
 
 
+def decrement_neighbor_pairs(all_pairs: AllPairs, left: Optional[Node], t1: Node, t2: Node, right: Optional[Node]):
+    if left is not None and left.alive:
+        decrement_pair(all_pairs, left, t1)
+    decrement_pair(all_pairs, t1, t2)
+    if right is not None and right.alive:
+        decrement_pair(all_pairs, t2, right)
+
+
+def increment_neighbor_pairs(all_pairs: AllPairs, left: Optional[Node], merged: Node, right: Optional[Node]):
+    if left is not None and left.alive:
+        increment_pair(all_pairs, left, merged)
+    if right is not None and right.alive:
+        increment_pair(all_pairs, merged, right)
+
+
+def merge_two_nodes(token_id: int, t1: Node, t2: Node) -> Node:
+    right = t2.next
+    t1.token = token_id
+    t1.next = right
+    if right is not None:
+        right.prev = t1
+
+    t2.alive = False
+    t2.prev = None
+    t2.next = None
+    return t1
+
+
 def merge(token_id: int, pair: PairInfo, all_pairs: AllPairs):
     # a, b, c, d => a, bc, d
     for t1 in pair.records:
         if not t1.alive:
             continue
         t2 = t1.next
+        # aaa, => a, aa. then a[0]a[1], a[1] is not alive.
         if t2 is None or not t2.alive:
             continue
         if t1.token != pair.t1 or t2.token != pair.t2:
@@ -106,34 +135,15 @@ def merge(token_id: int, pair: PairInfo, all_pairs: AllPairs):
         left = t1.prev
         right = t2.next
 
-        # decrementing a, bc.
-        if left is not None and left.alive:
-            decrement_pair(all_pairs, left, t1)
-        # decrement b, c itself.
-        decrement_pair(all_pairs, t1, t2)
-        # decrementing bc, d
-        if right is not None and right.alive:
-            decrement_pair(all_pairs, t2, right)
+        decrement_neighbor_pairs(all_pairs, left, t1, t2, right)
+        merged = merge_two_nodes(token_id, t1, t2)
+        increment_neighbor_pairs(all_pairs, left, merged, right)
 
-        # merge operation.
-        t1.token = token_id
-        t1.next = right
-        if right is not None:
-            right.prev = t1
-
-        t2.alive = False
-        t2.prev = None
-        t2.next = None
-
-        # why checking alive? because bpe pair gen itself is not considering overlapping or not
-        # it can aa, it can invalidate ab(second a).
-
-        # increment a, bc; bc, d.
-        if left is not None and left.alive:
-            increment_pair(all_pairs, left, t1)
-        if right is not None and right.alive:
-            increment_pair(all_pairs, t1, right)
-
+# TODO: gaps
+# bpe_merge() does not return vocab / merges yet.
+# There is no mapping from new token id to merged bytes.
+# max(all_pairs.values(), ...) will fail once all_pairs becomes empty before merge_times is exhausted.
+# PairInfo.records is append-only, so while the current validation protects correctness better, the structure will still accumulate stale records and may get inefficient.
 
 def bpe_merge(filename: str, merge_times=1):
     freq_map = init_token_freqmap(filename)
