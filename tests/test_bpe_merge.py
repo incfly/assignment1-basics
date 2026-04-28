@@ -29,11 +29,11 @@ def _render(vocab, byte_pair_map) -> str:
 @pytest.mark.parametrize(
     ("input_name", "output_name", "merge_times"),
     [
-        # ("bpe1.txt", "bpe1-out.txt", 0),
+        ("bpe1.txt", "bpe1-out.txt", 0),
         ("bpe2.txt", "bpe2-out.txt", 1),
-        # ("bpe3.txt", "bpe3-out.txt", 1),
-        # ("bpe4.txt", "bpe4-out.txt", 1),
-        # ("bpe5.txt", "bpe5-out.txt", 2),
+        ("bpe3.txt", "bpe3-out.txt", 1),
+        ("bpe4.txt", "bpe4-out.txt", 1),
+        ("bpe5.txt", "bpe5-out.txt", 2),
     ],
 )
 def test_bpe_merge_fixtures(input_name: str, output_name: str, merge_times: int) -> None:

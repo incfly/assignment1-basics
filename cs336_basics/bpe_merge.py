@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 # To test, run
@@ -9,7 +9,35 @@ except ImportError:
     from pretoken import init_token_freqmap
 
 
-type Vocab = dict[int, bytes]    
+class Vocab:
+    def __init__(self):
+        self.toint: dict[bytes, int] = {bytes([i]): i for i in range(256)}
+        self.toword: dict[int, bytes] = {i: bytes([i]) for i in range(256)}
+        self.next_ind = 257
+        self.merges: list[Merge] = []
+
+    def add_word(self, b: bytes) -> int:
+        token_id = self.toint.get(b)
+        if token_id is not None:
+            return token_id
+
+        token_id = self.next_ind
+        self.next_ind += 1
+        self.toint[b] = token_id
+        self.toword[token_id] = b
+        return token_id
+
+    def add_merge(self, left_id: int, right_id: int) -> int:
+        merged = self.toword[left_id] + self.toword[right_id]
+        return self.add_word(merged)
+
+    def items(self):
+        return (
+            (token_id, token)
+            for token_id, token in self.toword.items()
+            if token_id >= 256
+        )
+
 
 
 @dataclass
@@ -53,6 +81,8 @@ def init_word_nodes_list(word: bytes, freq: int) -> Node:
 
 
 type AllPairs = dict[(int,int), PairInfo]
+type Merge = tuple[int, int]
+type BytePairs = dict[bytes, PairInfo]
 
 # Cannot use set. set you can't modify the element itself.
 # Same in C++, value are constant.
@@ -139,76 +169,31 @@ def merge(token_id: int, pair: PairInfo, all_pairs: AllPairs):
         merged = merge_two_nodes(token_id, t1, t2)
         increment_neighbor_pairs(all_pairs, left, merged, right)
 
-# TODO: gaps
-# bpe_merge() does not return vocab / merges yet.
-# There is no mapping from new token id to merged bytes.
-# max(all_pairs.values(), ...) will fail once all_pairs becomes empty before merge_times is exhausted.
-# PairInfo.records is append-only, so while the current validation protects correctness better, the structure will still accumulate stale records and may get inefficient.
 
-def bpe_merge(filename: str, merge_times=1):
+def export_pairs(all_pairs: AllPairs, vocab: Vocab) -> BytePairs:
+    out: BytePairs = {}
+    for (left_id, right_id), info in all_pairs.items():
+        out[vocab.toword[left_id] + vocab.toword[right_id]] = info
+    return out
+
+# TODO: PairInfo.records is append-only, so while the current validation protects
+# correctness better, the structure will still accumulate stale records and may get inefficient.
+def bpe_merge(filename: str, merge_times=1) -> tuple[Vocab, BytePairs]:
     freq_map = init_token_freqmap(filename)
+    vocab = Vocab()
     heads = []
     for word, freq in freq_map.items():
         heads.append(init_word_nodes_list(word, freq))
     all_pairs = init_pair_info(heads)
-    next_token_id = 257
     for i in range(merge_times):
+        if not all_pairs:
+            break
         # TODO: ineffiency for scanning.
         largest_pair = max(all_pairs.values(), key=lambda pair: pair.freq)
-        merge(next_token_id, largest_pair, all_pairs)
-        next_token_id += 1
-
-
-# STOP HERE. REST is old impl
-
-type BytePair = tuple[int, int]
-
-
-@dataclass
-class WordDict:
-    toint: dict[bytes, int] = field(default_factory=dict) # diff with {}? 
-    toword: dict[int, bytes] = field(default_factory=dict)
-
-@dataclass
-class Index:
-    word_id: int
-    self_ind: int
-    self_len: int
-
-@dataclass
-class MergeInfo:
-    freq: int = 0
-    # how many bytes total we have, so we know what to look forward.
-    len: int = 0
-    # [1] means the token itself, beginning.
-    # token itself, for both before and after. mistake: only after.
-    # TODO: fix this.
-    indices: list[tuple[int,int]] = field(default_factory=list)
-    indexv2: list[Index] = field(default_factory=list)
-
-
-class BytePairMap(dict[BytePair, MergeInfo]):
-    def max_pair(self) -> BytePair:
-        return max(self, key=lambda pair: self[pair].freq)
-    
-    def decrement(self, bp: BytePair, freq: int):
-        if self.get(bp) is None:
-            print("panic!")
-            return
-        self[bp].freq -= freq
-        if self[bp].freq == 0:
-            del self[bp]
-            print('delete key')
-
-
-def init_worddict(freq_map: FrequencyMap) -> WordDict:
-    wd : WordDict = WordDict()
-    word_ind = 1
-    for token, _ in freq_map.items():
-        wd.toword[word_ind] = token
-        wd.toint[token] = word_ind
-        word_ind += 1
-    return wd
+        vocab.merges.append((largest_pair.t1, largest_pair.t2))
+        token_id = vocab.add_merge(largest_pair.t1, largest_pair.t2)
+        merge(token_id, largest_pair, all_pairs)
+    return vocab, export_pairs(all_pairs, vocab)
 
 
 if __name__ == "__main__":
