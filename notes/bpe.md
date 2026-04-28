@@ -35,6 +35,20 @@ what to do, doubly linked list.
     https://chatgpt.com/c/69ef0184-bde8-83ea-9824-ee1e23290d3f
 
 
+half vibe coding,
+    psedyo code with comment. ask what can be wrong.
+```python
+def merge(token_id: int, pair: PairInfo, all_pairs: AllPairs):
+    # imagine, a, b, c, d, => a, bc, d.
+    # we are deleting ab and cd, first.
+    # for all pairinfo.records we do this:
+    # TODO: identify ab and cd.
+    # then reduce frequency by node.freq
+    # then add bc frequncy by node.freq
+    # then we add frequency of `bc, d` and `a, bc`
+    pass
+```
+
 ## TODO
 
 >  When encoding text, it’s often desirable to treat some strings as “special tokens” that should
