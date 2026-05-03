@@ -1,0 +1,92 @@
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
+#include <memory>
+#include <string>
+#include <unordered_map>
+
+#include "re2/re2.h"
+
+static std::unordered_map<std::string, std::unique_ptr<re2::RE2>> g_re_cache;
+
+static re2::RE2* get_compiled_re(const std::string& pattern) {
+    auto it = g_re_cache.find(pattern);
+    if (it != g_re_cache.end()) {
+        return it->second.get();
+    }
+
+    auto compiled = std::make_unique<re2::RE2>(pattern);
+    re2::RE2* compiled_ptr = compiled.get();
+    g_re_cache.emplace(pattern, std::move(compiled));
+    return compiled_ptr;
+}
+
+static PyObject* findall(PyObject* self, PyObject* args) {
+    const char* pattern = nullptr;
+    const char* text = nullptr;
+
+    if (!PyArg_ParseTuple(args, "ss", &pattern, &text)) {
+        return nullptr;
+    }
+
+    std::string wrapped_pattern = "(" + std::string(pattern) + ")";
+    re2::RE2* re = get_compiled_re(wrapped_pattern);
+    if (!re->ok()) {
+        PyErr_Format(PyExc_ValueError, "invalid RE2 pattern: %s", re->error().c_str());
+        return nullptr;
+    }
+
+    PyObject* out = PyList_New(0);
+    if (out == nullptr) {
+        return nullptr;
+    }
+
+    std::string text_string(text);
+    absl::string_view full_text(text_string);
+    absl::string_view submatches[2];
+    size_t search_start = 0;
+
+    while (search_start <= full_text.size() &&
+           re->Match(full_text, search_start, full_text.size(), re2::RE2::UNANCHORED, submatches, 2)) {
+        PyObject* py_match = PyUnicode_FromStringAndSize(
+            submatches[1].data(),
+            static_cast<Py_ssize_t>(submatches[1].size())
+        );
+        if (py_match == nullptr) {
+            Py_DECREF(out);
+            return nullptr;
+        }
+        if (PyList_Append(out, py_match) < 0) {
+            Py_DECREF(py_match);
+            Py_DECREF(out);
+            return nullptr;
+        }
+        Py_DECREF(py_match);
+
+        size_t match_begin = static_cast<size_t>(submatches[0].data() - full_text.data());
+        size_t match_end = match_begin + submatches[0].size();
+        search_start = match_end;
+        if (match_end == match_begin) {
+            search_start += 1;
+        }
+    }
+
+    return out;
+}
+
+static PyMethodDef re2_demo_methods[] = {
+    {"findall", findall, METH_VARARGS, "Return all non-overlapping full matches using RE2."},
+    {nullptr, nullptr, 0, nullptr},
+};
+
+static PyModuleDef re2_demo_module = {
+    PyModuleDef_HEAD_INIT,
+    "_re2demo",
+    "Minimal Python binding for Google RE2.",
+    -1,
+    re2_demo_methods,
+};
+
+PyMODINIT_FUNC PyInit__re2demo(void) {
+    return PyModule_Create(&re2_demo_module);
+}

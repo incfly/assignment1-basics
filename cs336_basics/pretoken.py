@@ -13,10 +13,18 @@ import regex as re
 type ChunkBounds = tuple[int, int]
 type ChunkBoundsList = list[ChunkBounds]
 type FrequencyMap = dict[bytes, int]
+type RegexMode = str
 
 data: bytes
 split_token: bytes = b"<|endoftext|>"
 worker_profile_dir: str | None = None
+worker_regex_mode: RegexMode = "py"
+worker_py_pattern: re.Pattern[str] | None = None
+worker_cpp_findall = None
+
+PY_PRETOKEN_PATTERN = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
+# RE2 does not support lookaround, so we use the equivalent final whitespace fallback.
+CPP_PRETOKEN_PATTERN = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+"""
 
 LOGGER = logging.getLogger(__name__)
 if not LOGGER.handlers:
@@ -78,6 +86,7 @@ def _init_shared_string(
     s: bytes,
     special_token: bytes,
     profile_dir: str | None,
+    regex_mode: RegexMode,
 ) -> None:
     '''
     Init the worker with entire training data corpus. Not the best but ok.
@@ -87,9 +96,29 @@ def _init_shared_string(
     global data
     global split_token
     global worker_profile_dir
+    global worker_regex_mode
+    global worker_py_pattern
+    global worker_cpp_findall
     data = s
     split_token = special_token
     worker_profile_dir = profile_dir
+    worker_regex_mode = regex_mode
+
+    if regex_mode == "py":
+        worker_py_pattern = re.compile(PY_PRETOKEN_PATTERN)
+        worker_cpp_findall = None
+    elif regex_mode == "cpp":
+        worker_py_pattern = None
+        try:
+            from re2_demo import findall as re2_findall
+        except ImportError as exc:
+            raise RuntimeError(
+                "regex_mode='cpp' requires building re2_demo first via "
+                "`./scripts/bootstrap_re2_linux.sh` and `PYTHON_BIN=python3 ./scripts/build_re2_demo_linux.sh`."
+            ) from exc
+        worker_cpp_findall = re2_findall
+    else:
+        raise ValueError(f"unsupported regex_mode={regex_mode!r}")
 
 
 def _get_file_chunk_bounds(
@@ -123,8 +152,6 @@ def _pretoken_worker(bounds: ChunkBounds) -> FrequencyMap:
         preview,
     )
 
-    PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
-
     profiler = cProfile.Profile() if worker_profile_dir is not None else None
     if profiler is not None:
         profiler.enable()
@@ -133,7 +160,13 @@ def _pretoken_worker(bounds: ChunkBounds) -> FrequencyMap:
         out: defaultdict[bytes, int] = defaultdict(int)
         for doc in share.split(split_token):
             doc_text = doc.decode("utf-8", errors="ignore")
-            for t in re.findall(PAT, doc_text):
+            if worker_regex_mode == "py":
+                assert worker_py_pattern is not None
+                tokens = worker_py_pattern.findall(doc_text)
+            else:
+                assert worker_cpp_findall is not None
+                tokens = worker_cpp_findall(CPP_PRETOKEN_PATTERN, doc_text)
+            for t in tokens:
                 out[t.encode("utf-8")] += 1
         return dict(out)
     finally:
@@ -149,6 +182,7 @@ def _pretoken_with_pool(
     special_token: bytes,
     num_workers: int,
     profile_dir: str | None,
+    regex_mode: RegexMode,
 ) -> FrequencyMap:
     '''
     NOTE: map reduce fashion. worker emit frequency map, main process consolidate into merged dict.
@@ -159,7 +193,7 @@ def _pretoken_with_pool(
     with ctx.Pool(
         num_workers,
         initializer=_init_shared_string,
-        initargs=(shared_data, special_token, profile_dir),
+        initargs=(shared_data, special_token, profile_dir, regex_mode),
     ) as p:
         results = p.map(_pretoken_worker, bounds_list)
         merged: FrequencyMap = {}
@@ -174,14 +208,16 @@ def init_token_freqmap(
     desired_num_chunks: int = 4,
     num_workers: int = 4,
     profile_dir: str | None = None,
+    regex_mode: RegexMode = "py",
     special_token: bytes = b"<|endoftext|>",
 ) -> FrequencyMap:
     start_time = time.perf_counter()
     LOGGER.info(
-        "init_token_freqmap start filename=%s requested_chunks=%s requested_workers=%s",
+        "init_token_freqmap start filename=%s requested_chunks=%s requested_workers=%s regex_mode=%s",
         filename,
         desired_num_chunks,
         num_workers,
+        regex_mode,
     )
     shared_data, bounds_list = _get_file_chunk_bounds(
         filename=filename,
@@ -194,6 +230,7 @@ def init_token_freqmap(
         special_token,
         num_workers,
         profile_dir,
+        regex_mode,
     )
     LOGGER.info(
         "init_token_freqmap finish filename=%s actual_chunks=%s workers=%s unique_tokens=%s elapsed=%.2fs",

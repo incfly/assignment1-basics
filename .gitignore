@@ -164,6 +164,8 @@ cython_debug/
 
 # my own
 .DS_Store
+# re2 binding
+third_party/
 
 .vscode/
 *.prof

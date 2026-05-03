@@ -264,6 +264,7 @@ def bpe_merge(
     pretoken_workers: int = 4,
     pretoken_chunks: int = 4,
     pretoken_profile_dir: str | None = None,
+    regex_mode: str = "py",
     special_token: bytes = b"<|endoftext|>",
 ) -> tuple[Vocab, BytePairs]:
     start_time = time.perf_counter()
@@ -278,6 +279,7 @@ def bpe_merge(
         desired_num_chunks=pretoken_chunks,
         num_workers=pretoken_workers,
         profile_dir=pretoken_profile_dir,
+        regex_mode=regex_mode,
         special_token=special_token,
     )
     vocab = Vocab()
@@ -321,6 +323,7 @@ def train_bpe(
     pretoken_workers: int = 4,
     pretoken_chunks: int = 4,
     pretoken_profile_dir: str | None = None,
+    regex_mode: str = "py",
 ) -> tuple[ExternalVocab, ExternalMerges]:
     merge_vocab_size = max(256, vocab_size - len(special_tokens))
     split_special_token = (
@@ -335,6 +338,7 @@ def train_bpe(
         pretoken_workers=pretoken_workers,
         pretoken_chunks=pretoken_chunks,
         pretoken_profile_dir=pretoken_profile_dir,
+        regex_mode=regex_mode,
         special_token=split_special_token,
     )
     exported_vocab, exported_merges = export_train_result(vocab, special_tokens)
@@ -348,6 +352,7 @@ if __name__ == "__main__":
     parser.add_argument("--pretoken-worker", type=int, default=4)
     parser.add_argument("--pretoken-chunk", type=int, default=4)
     parser.add_argument("--pretoken-profile-dir")
+    parser.add_argument("--regex-mode", choices=["py", "cpp"], default="py")
     args = parser.parse_args()
     vocab, merges = train_bpe(
         input_path=args.input_file,
@@ -355,4 +360,5 @@ if __name__ == "__main__":
         pretoken_workers=args.pretoken_worker,
         pretoken_chunks=args.pretoken_chunk,
         pretoken_profile_dir=args.pretoken_profile_dir,
+        regex_mode=args.regex_mode,
         special_tokens=["<|endoftext|>"])
