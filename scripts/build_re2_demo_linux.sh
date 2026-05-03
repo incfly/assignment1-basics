@@ -4,7 +4,12 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RE2_PREFIX="${ROOT_DIR}/.local/re2"
 BUILD_DIR="${ROOT_DIR}/re2_demo/build"
-PYTHON_BIN="${PYTHON_BIN:-python3}"
+DEFAULT_PYTHON_BIN="${ROOT_DIR}/.venv/bin/python3"
+if [[ -x "${DEFAULT_PYTHON_BIN}" ]]; then
+  PYTHON_BIN="${PYTHON_BIN:-${DEFAULT_PYTHON_BIN}}"
+else
+  PYTHON_BIN="${PYTHON_BIN:-python3}"
+fi
 
 command -v cmake >/dev/null || { echo "cmake is required"; exit 1; }
 command -v "${PYTHON_BIN}" >/dev/null || { echo "${PYTHON_BIN} is required"; exit 1; }

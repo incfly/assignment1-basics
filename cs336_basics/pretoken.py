@@ -21,6 +21,7 @@ worker_profile_dir: str | None = None
 worker_regex_mode: RegexMode = "py"
 worker_py_pattern: re.Pattern[str] | None = None
 worker_cpp_findall = None
+worker_cpp_token_freqmap = None
 
 PY_PRETOKEN_PATTERN = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 # RE2 does not support lookaround, so we use the equivalent final whitespace fallback.
@@ -99,6 +100,7 @@ def _init_shared_string(
     global worker_regex_mode
     global worker_py_pattern
     global worker_cpp_findall
+    global worker_cpp_token_freqmap
     data = s
     split_token = special_token
     worker_profile_dir = profile_dir
@@ -107,16 +109,19 @@ def _init_shared_string(
     if regex_mode == "py":
         worker_py_pattern = re.compile(PY_PRETOKEN_PATTERN)
         worker_cpp_findall = None
+        worker_cpp_token_freqmap = None
     elif regex_mode == "cpp":
         worker_py_pattern = None
         try:
             from re2_demo import findall as re2_findall
+            from re2_demo import token_freqmap as re2_token_freqmap
         except ImportError as exc:
             raise RuntimeError(
                 "regex_mode='cpp' requires building re2_demo first via "
                 "`./scripts/bootstrap_re2_linux.sh` and `PYTHON_BIN=python3 ./scripts/build_re2_demo_linux.sh`."
             ) from exc
         worker_cpp_findall = re2_findall
+        worker_cpp_token_freqmap = re2_token_freqmap
     else:
         raise ValueError(f"unsupported regex_mode={regex_mode!r}")
 
@@ -157,15 +162,15 @@ def _pretoken_worker(bounds: ChunkBounds) -> FrequencyMap:
         profiler.enable()
 
     try:
+        if worker_regex_mode == "cpp":
+            assert worker_cpp_token_freqmap is not None
+            return worker_cpp_token_freqmap(CPP_PRETOKEN_PATTERN, share, split_token)
+
         out: defaultdict[bytes, int] = defaultdict(int)
         for doc in share.split(split_token):
             doc_text = doc.decode("utf-8", errors="ignore")
-            if worker_regex_mode == "py":
-                assert worker_py_pattern is not None
-                tokens = worker_py_pattern.findall(doc_text)
-            else:
-                assert worker_cpp_findall is not None
-                tokens = worker_cpp_findall(CPP_PRETOKEN_PATTERN, doc_text)
+            assert worker_py_pattern is not None
+            tokens = worker_py_pattern.findall(doc_text)
             for t in tokens:
                 out[t.encode("utf-8")] += 1
         return dict(out)
