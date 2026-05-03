@@ -1,0 +1,1460 @@
+[
+  {
+    "left_hex": "68",
+    "right_hex": "65",
+    "left_repr": "b'h'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "74",
+    "left_repr": "b' '",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "61",
+    "left_repr": "b' '",
+    "right_repr": "b'a'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "73",
+    "left_repr": "b' '",
+    "right_repr": "b's'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "77",
+    "left_repr": "b' '",
+    "right_repr": "b'w'"
+  },
+  {
+    "left_hex": "6e",
+    "right_hex": "64",
+    "left_repr": "b'n'",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "2074",
+    "right_hex": "6865",
+    "left_repr": "b' t'",
+    "right_repr": "b'he'"
+  },
+  {
+    "left_hex": "65",
+    "right_hex": "64",
+    "left_repr": "b'e'",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "2061",
+    "right_hex": "6e64",
+    "left_repr": "b' a'",
+    "right_repr": "b'nd'"
+  },
+  {
+    "left_hex": "2074",
+    "right_hex": "6f",
+    "left_repr": "b' t'",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "62",
+    "left_repr": "b' '",
+    "right_repr": "b'b'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "6e",
+    "left_repr": "b'i'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "68",
+    "left_repr": "b' '",
+    "right_repr": "b'h'"
+  },
+  {
+    "left_hex": "2077",
+    "right_hex": "61",
+    "left_repr": "b' w'",
+    "right_repr": "b'a'"
+  },
+  {
+    "left_hex": "72",
+    "right_hex": "65",
+    "left_repr": "b'r'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "6f",
+    "right_hex": "75",
+    "left_repr": "b'o'",
+    "right_repr": "b'u'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "66",
+    "left_repr": "b' '",
+    "right_repr": "b'f'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "74",
+    "left_repr": "b'i'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6c",
+    "left_repr": "b' '",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "63",
+    "left_repr": "b' '",
+    "right_repr": "b'c'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "64",
+    "left_repr": "b' '",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "65",
+    "right_hex": "72",
+    "left_repr": "b'e'",
+    "right_repr": "b'r'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6865",
+    "left_repr": "b' '",
+    "right_repr": "b'he'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6d",
+    "left_repr": "b' '",
+    "right_repr": "b'm'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "70",
+    "left_repr": "b' '",
+    "right_repr": "b'p'"
+  },
+  {
+    "left_hex": "207761",
+    "right_hex": "73",
+    "left_repr": "b' wa'",
+    "right_repr": "b's'"
+  },
+  {
+    "left_hex": "6f",
+    "right_hex": "6d",
+    "left_repr": "b'o'",
+    "right_repr": "b'm'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "54",
+    "left_repr": "b' '",
+    "right_repr": "b'T'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6f",
+    "left_repr": "b' '",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "79",
+    "left_repr": "b'a'",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "72",
+    "left_repr": "b'a'",
+    "right_repr": "b'r'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "73",
+    "left_repr": "b'i'",
+    "right_repr": "b's'"
+  },
+  {
+    "left_hex": "696e",
+    "right_hex": "67",
+    "left_repr": "b'in'",
+    "right_repr": "b'g'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "6c",
+    "left_repr": "b'i'",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "67",
+    "left_repr": "b' '",
+    "right_repr": "b'g'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "64",
+    "left_repr": "b'i'",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "74",
+    "left_repr": "b'a'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "65",
+    "right_hex": "6e",
+    "left_repr": "b'e'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6e",
+    "left_repr": "b' '",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "61",
+    "left_repr": "b' s'",
+    "right_repr": "b'a'"
+  },
+  {
+    "left_hex": "2068",
+    "right_hex": "61",
+    "left_repr": "b' h'",
+    "right_repr": "b'a'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "53",
+    "left_repr": "b' '",
+    "right_repr": "b'S'"
+  },
+  {
+    "left_hex": "2054",
+    "right_hex": "6865",
+    "left_repr": "b' T'",
+    "right_repr": "b'he'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "6e",
+    "left_repr": "b'a'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "6d",
+    "left_repr": "b'i'",
+    "right_repr": "b'm'"
+  },
+  {
+    "left_hex": "6f",
+    "right_hex": "72",
+    "left_repr": "b'o'",
+    "right_repr": "b'r'"
+  },
+  {
+    "left_hex": "6f",
+    "right_hex": "6e",
+    "left_repr": "b'o'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6974",
+    "left_repr": "b' '",
+    "right_repr": "b'it'"
+  },
+  {
+    "left_hex": "2074",
+    "right_hex": "68",
+    "left_repr": "b' t'",
+    "right_repr": "b'h'"
+  },
+  {
+    "left_hex": "6c",
+    "right_hex": "6c",
+    "left_repr": "b'l'",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "6c",
+    "right_hex": "65",
+    "left_repr": "b'l'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "48",
+    "left_repr": "b' '",
+    "right_repr": "b'H'"
+  },
+  {
+    "left_hex": "206865",
+    "right_hex": "72",
+    "left_repr": "b' he'",
+    "right_repr": "b'r'"
+  },
+  {
+    "left_hex": "6f",
+    "right_hex": "74",
+    "left_repr": "b'o'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "65",
+    "right_hex": "74",
+    "left_repr": "b'e'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "72",
+    "left_repr": "b'i'",
+    "right_repr": "b'r'"
+  },
+  {
+    "left_hex": "2053",
+    "right_hex": "6865",
+    "left_repr": "b' S'",
+    "right_repr": "b'he'"
+  },
+  {
+    "left_hex": "65",
+    "right_hex": "73",
+    "left_repr": "b'e'",
+    "right_repr": "b's'"
+  },
+  {
+    "left_hex": "2048",
+    "right_hex": "65",
+    "left_repr": "b' H'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "696e",
+    "left_repr": "b' '",
+    "right_repr": "b'in'"
+  },
+  {
+    "left_hex": "76",
+    "right_hex": "6572",
+    "left_repr": "b'v'",
+    "right_repr": "b'er'"
+  },
+  {
+    "left_hex": "75",
+    "right_hex": "74",
+    "left_repr": "b'u'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "6f",
+    "right_hex": "77",
+    "left_repr": "b'o'",
+    "right_repr": "b'w'"
+  },
+  {
+    "left_hex": "20546865",
+    "right_hex": "79",
+    "left_repr": "b' The'",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "63",
+    "right_hex": "6b",
+    "left_repr": "b'c'",
+    "right_repr": "b'k'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "65",
+    "left_repr": "b' '",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "75",
+    "left_repr": "b' '",
+    "right_repr": "b'u'"
+  },
+  {
+    "left_hex": "6c",
+    "right_hex": "64",
+    "left_repr": "b'l'",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "79",
+    "left_repr": "b' '",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "6f",
+    "right_hex": "6f",
+    "left_repr": "b'o'",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "207361",
+    "right_hex": "6964",
+    "left_repr": "b' sa'",
+    "right_repr": "b'id'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "67",
+    "left_repr": "b'i'",
+    "right_repr": "b'g'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "22",
+    "left_repr": "b' '",
+    "right_repr": "b'\"'"
+  },
+  {
+    "left_hex": "696c",
+    "right_hex": "79",
+    "left_repr": "b'il'",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "72",
+    "left_repr": "b' '",
+    "right_repr": "b'r'"
+  },
+  {
+    "left_hex": "2062",
+    "right_hex": "65",
+    "left_repr": "b' b'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "6d",
+    "left_repr": "b'a'",
+    "right_repr": "b'm'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "74",
+    "left_repr": "b' s'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "49",
+    "left_repr": "b' '",
+    "right_repr": "b'I'"
+  },
+  {
+    "left_hex": "63",
+    "right_hex": "65",
+    "left_repr": "b'c'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "6b",
+    "right_hex": "65",
+    "left_repr": "b'k'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "6865",
+    "left_repr": "b' s'",
+    "right_repr": "b'he'"
+  },
+  {
+    "left_hex": "76",
+    "right_hex": "65",
+    "left_repr": "b'v'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "70",
+    "right_hex": "70",
+    "left_repr": "b'p'",
+    "right_repr": "b'p'"
+  },
+  {
+    "left_hex": "6974",
+    "right_hex": "68",
+    "left_repr": "b'it'",
+    "right_repr": "b'h'"
+  },
+  {
+    "left_hex": "2077",
+    "right_hex": "697468",
+    "left_repr": "b' w'",
+    "right_repr": "b'ith'"
+  },
+  {
+    "left_hex": "4c",
+    "right_hex": "696c79",
+    "left_repr": "b'L'",
+    "right_repr": "b'ily'"
+  },
+  {
+    "left_hex": "4f",
+    "right_hex": "6e",
+    "left_repr": "b'O'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "206f",
+    "right_hex": "6e",
+    "left_repr": "b' o'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "2079",
+    "right_hex": "6f75",
+    "left_repr": "b' y'",
+    "right_repr": "b'ou'"
+  },
+  {
+    "left_hex": "206f",
+    "right_hex": "66",
+    "left_repr": "b' o'",
+    "right_repr": "b'f'"
+  },
+  {
+    "left_hex": "6b",
+    "right_hex": "6564",
+    "left_repr": "b'k'",
+    "right_repr": "b'ed'"
+  },
+  {
+    "left_hex": "72",
+    "right_hex": "69",
+    "left_repr": "b'r'",
+    "right_repr": "b'i'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "6f",
+    "left_repr": "b' s'",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "6e",
+    "right_hex": "74",
+    "left_repr": "b'n'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "2068",
+    "right_hex": "6973",
+    "left_repr": "b' h'",
+    "right_repr": "b'is'"
+  },
+  {
+    "left_hex": "2070",
+    "right_hex": "6c",
+    "left_repr": "b' p'",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "64",
+    "left_repr": "b'a'",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "766572",
+    "right_hex": "79",
+    "left_repr": "b'ver'",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "2064",
+    "right_hex": "6179",
+    "left_repr": "b' d'",
+    "right_repr": "b'ay'"
+  },
+  {
+    "left_hex": "207468",
+    "right_hex": "6174",
+    "left_repr": "b' th'",
+    "right_repr": "b'at'"
+  },
+  {
+    "left_hex": "2075",
+    "right_hex": "70",
+    "left_repr": "b' u'",
+    "right_repr": "b'p'"
+  },
+  {
+    "left_hex": "20706c",
+    "right_hex": "6179",
+    "left_repr": "b' pl'",
+    "right_repr": "b'ay'"
+  },
+  {
+    "left_hex": "206861",
+    "right_hex": "64",
+    "left_repr": "b' ha'",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "73",
+    "right_hex": "74",
+    "left_repr": "b's'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "20746865",
+    "right_hex": "79",
+    "left_repr": "b' the'",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "2077",
+    "right_hex": "65",
+    "left_repr": "b' w'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "4c696c79",
+    "left_repr": "b' '",
+    "right_repr": "b'Lily'"
+  },
+  {
+    "left_hex": "206d",
+    "right_hex": "6f6d",
+    "left_repr": "b' m'",
+    "right_repr": "b'om'"
+  },
+  {
+    "left_hex": "2066",
+    "right_hex": "6f72",
+    "left_repr": "b' f'",
+    "right_repr": "b'or'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "42",
+    "left_repr": "b' '",
+    "right_repr": "b'B'"
+  },
+  {
+    "left_hex": "65",
+    "right_hex": "6c",
+    "left_repr": "b'e'",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "75",
+    "right_hex": "6e",
+    "left_repr": "b'u'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "6f75",
+    "right_hex": "6c64",
+    "left_repr": "b'ou'",
+    "right_repr": "b'ld'"
+  },
+  {
+    "left_hex": "27",
+    "right_hex": "73",
+    "left_repr": "b\"'\"",
+    "right_repr": "b's'"
+  },
+  {
+    "left_hex": "6d",
+    "right_hex": "79",
+    "left_repr": "b'm'",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "54",
+    "right_hex": "6865",
+    "left_repr": "b'T'",
+    "right_repr": "b'he'"
+  },
+  {
+    "left_hex": "206c",
+    "right_hex": "69",
+    "left_repr": "b' l'",
+    "right_repr": "b'i'"
+  },
+  {
+    "left_hex": "63",
+    "right_hex": "68",
+    "left_repr": "b'c'",
+    "right_repr": "b'h'"
+  },
+  {
+    "left_hex": "656e",
+    "right_hex": "74",
+    "left_repr": "b'en'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "206861",
+    "right_hex": "7070",
+    "left_repr": "b' ha'",
+    "right_repr": "b'pp'"
+  },
+  {
+    "left_hex": "207761",
+    "right_hex": "6e74",
+    "left_repr": "b' wa'",
+    "right_repr": "b'nt'"
+  },
+  {
+    "left_hex": "6974",
+    "right_hex": "74",
+    "left_repr": "b'it'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "68",
+    "left_repr": "b' s'",
+    "right_repr": "b'h'"
+  },
+  {
+    "left_hex": "6f75",
+    "right_hex": "74",
+    "left_repr": "b'ou'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "6865",
+    "right_hex": "72",
+    "left_repr": "b'he'",
+    "right_repr": "b'r'"
+  },
+  {
+    "left_hex": "2064",
+    "right_hex": "6f",
+    "left_repr": "b' d'",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "6c",
+    "right_hex": "79",
+    "left_repr": "b'l'",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "206e",
+    "right_hex": "6f74",
+    "left_repr": "b' n'",
+    "right_repr": "b'ot'"
+  },
+  {
+    "left_hex": "6f6d",
+    "right_hex": "65",
+    "left_repr": "b'om'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "73",
+    "right_hex": "65",
+    "left_repr": "b's'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "76657279",
+    "left_repr": "b' '",
+    "right_repr": "b'very'"
+  },
+  {
+    "left_hex": "6f75",
+    "right_hex": "6e64",
+    "left_repr": "b'ou'",
+    "right_repr": "b'nd'"
+  },
+  {
+    "left_hex": "65",
+    "right_hex": "6e64",
+    "left_repr": "b'e'",
+    "right_repr": "b'nd'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "6c6c",
+    "left_repr": "b'a'",
+    "right_repr": "b'll'"
+  },
+  {
+    "left_hex": "2077",
+    "right_hex": "68",
+    "left_repr": "b' w'",
+    "right_repr": "b'h'"
+  },
+  {
+    "left_hex": "696d",
+    "right_hex": "65",
+    "left_repr": "b'im'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "697474",
+    "right_hex": "6c65",
+    "left_repr": "b'itt'",
+    "right_repr": "b'le'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6b",
+    "left_repr": "b' '",
+    "right_repr": "b'k'"
+  },
+  {
+    "left_hex": "2074",
+    "right_hex": "696d65",
+    "left_repr": "b' t'",
+    "right_repr": "b'ime'"
+  },
+  {
+    "left_hex": "206c",
+    "right_hex": "6974746c65",
+    "left_repr": "b' l'",
+    "right_repr": "b'ittle'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "6c",
+    "left_repr": "b'a'",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "20746865",
+    "right_hex": "7265",
+    "left_repr": "b' the'",
+    "right_repr": "b're'"
+  },
+  {
+    "left_hex": "206e",
+    "right_hex": "65",
+    "left_repr": "b' n'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "68",
+    "right_hex": "74",
+    "left_repr": "b'h'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "4d",
+    "left_repr": "b' '",
+    "right_repr": "b'M'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "7265",
+    "left_repr": "b' '",
+    "right_repr": "b're'"
+  },
+  {
+    "left_hex": "2068617070",
+    "right_hex": "79",
+    "left_repr": "b' happ'",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "6d",
+    "left_repr": "b' s'",
+    "right_repr": "b'm'"
+  },
+  {
+    "left_hex": "2062",
+    "right_hex": "6967",
+    "left_repr": "b' b'",
+    "right_repr": "b'ig'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6973",
+    "left_repr": "b' '",
+    "right_repr": "b'is'"
+  },
+  {
+    "left_hex": "2049",
+    "right_hex": "74",
+    "left_repr": "b' I'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "2062",
+    "right_hex": "7574",
+    "left_repr": "b' b'",
+    "right_repr": "b'ut'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "636b",
+    "left_repr": "b'a'",
+    "right_repr": "b'ck'"
+  },
+  {
+    "left_hex": "2061",
+    "right_hex": "6e",
+    "left_repr": "b' a'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "207361",
+    "right_hex": "77",
+    "left_repr": "b' sa'",
+    "right_repr": "b'w'"
+  },
+  {
+    "left_hex": "7269",
+    "right_hex": "656e64",
+    "left_repr": "b'ri'",
+    "right_repr": "b'end'"
+  },
+  {
+    "left_hex": "2e",
+    "right_hex": "22",
+    "left_repr": "b'.'",
+    "right_repr": "b'\"'"
+  },
+  {
+    "left_hex": "2066",
+    "right_hex": "7269656e64",
+    "left_repr": "b' f'",
+    "right_repr": "b'riend'"
+  },
+  {
+    "left_hex": "72",
+    "right_hex": "79",
+    "left_repr": "b'r'",
+    "right_repr": "b'y'"
+  },
+  {
+    "left_hex": "2061",
+    "right_hex": "73",
+    "left_repr": "b' a'",
+    "right_repr": "b's'"
+  },
+  {
+    "left_hex": "72",
+    "right_hex": "61",
+    "left_repr": "b'r'",
+    "right_repr": "b'a'"
+  },
+  {
+    "left_hex": "4f6e",
+    "right_hex": "65",
+    "left_repr": "b'On'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "6964",
+    "right_hex": "65",
+    "left_repr": "b'id'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "6b65",
+    "left_repr": "b'a'",
+    "right_repr": "b'ke'"
+  },
+  {
+    "left_hex": "27",
+    "right_hex": "74",
+    "left_repr": "b\"'\"",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "21",
+    "right_hex": "22",
+    "left_repr": "b'!'",
+    "right_repr": "b'\"'"
+  },
+  {
+    "left_hex": "75",
+    "right_hex": "67",
+    "left_repr": "b'u'",
+    "right_repr": "b'g'"
+  },
+  {
+    "left_hex": "206c",
+    "right_hex": "6f6f",
+    "left_repr": "b' l'",
+    "right_repr": "b'oo'"
+  },
+  {
+    "left_hex": "76",
+    "right_hex": "6564",
+    "left_repr": "b'v'",
+    "right_repr": "b'ed'"
+  },
+  {
+    "left_hex": "74",
+    "right_hex": "6572",
+    "left_repr": "b't'",
+    "right_repr": "b'er'"
+  },
+  {
+    "left_hex": "207765",
+    "right_hex": "7265",
+    "left_repr": "b' we'",
+    "right_repr": "b're'"
+  },
+  {
+    "left_hex": "6f",
+    "right_hex": "7265",
+    "left_repr": "b'o'",
+    "right_repr": "b're'"
+  },
+  {
+    "left_hex": "4f6e",
+    "right_hex": "6365",
+    "left_repr": "b'On'",
+    "right_repr": "b'ce'"
+  },
+  {
+    "left_hex": "206c",
+    "right_hex": "6f",
+    "left_repr": "b' l'",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "65",
+    "right_hex": "63",
+    "left_repr": "b'e'",
+    "right_repr": "b'c'"
+  },
+  {
+    "left_hex": "2068",
+    "right_hex": "696d",
+    "left_repr": "b' h'",
+    "right_repr": "b'im'"
+  },
+  {
+    "left_hex": "20746f",
+    "right_hex": "6f",
+    "left_repr": "b' to'",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "2067",
+    "right_hex": "6f",
+    "left_repr": "b' g'",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "2062",
+    "right_hex": "6f",
+    "left_repr": "b' b'",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "65",
+    "left_repr": "b' s'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "6972",
+    "right_hex": "6c",
+    "left_repr": "b'ir'",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "2061",
+    "right_hex": "7265",
+    "left_repr": "b' a'",
+    "right_repr": "b're'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6a",
+    "left_repr": "b' '",
+    "right_repr": "b'j'"
+  },
+  {
+    "left_hex": "2054",
+    "right_hex": "696d",
+    "left_repr": "b' T'",
+    "right_repr": "b'im'"
+  },
+  {
+    "left_hex": "6172",
+    "right_hex": "64",
+    "left_repr": "b'ar'",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "2077616e74",
+    "right_hex": "6564",
+    "left_repr": "b' want'",
+    "right_repr": "b'ed'"
+  },
+  {
+    "left_hex": "696c",
+    "right_hex": "6c",
+    "left_repr": "b'il'",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "2067",
+    "right_hex": "69726c",
+    "left_repr": "b' g'",
+    "right_repr": "b'irl'"
+  },
+  {
+    "left_hex": "207570",
+    "right_hex": "6f6e",
+    "left_repr": "b' up'",
+    "right_repr": "b'on'"
+  },
+  {
+    "left_hex": "20746865",
+    "right_hex": "6d",
+    "left_repr": "b' the'",
+    "right_repr": "b'm'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "6f7574",
+    "left_repr": "b' '",
+    "right_repr": "b'out'"
+  },
+  {
+    "left_hex": "2061",
+    "right_hex": "74",
+    "left_repr": "b' a'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "75",
+    "right_hex": "72",
+    "left_repr": "b'u'",
+    "right_repr": "b'r'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "6e64",
+    "left_repr": "b'i'",
+    "right_repr": "b'nd'"
+  },
+  {
+    "left_hex": "20746865",
+    "right_hex": "6972",
+    "left_repr": "b' the'",
+    "right_repr": "b'ir'"
+  },
+  {
+    "left_hex": "66",
+    "right_hex": "75",
+    "left_repr": "b'f'",
+    "right_repr": "b'u'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "70",
+    "left_repr": "b' s'",
+    "right_repr": "b'p'"
+  },
+  {
+    "left_hex": "77",
+    "right_hex": "6179",
+    "left_repr": "b'w'",
+    "right_repr": "b'ay'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "41",
+    "left_repr": "b' '",
+    "right_repr": "b'A'"
+  },
+  {
+    "left_hex": "20736d",
+    "right_hex": "696c",
+    "left_repr": "b' sm'",
+    "right_repr": "b'il'"
+  },
+  {
+    "left_hex": "2064",
+    "right_hex": "6964",
+    "left_repr": "b' d'",
+    "right_repr": "b'id'"
+  },
+  {
+    "left_hex": "2063",
+    "right_hex": "6f756c64",
+    "left_repr": "b' c'",
+    "right_repr": "b'ould'"
+  },
+  {
+    "left_hex": "6865",
+    "right_hex": "6e",
+    "left_repr": "b'he'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "206861",
+    "right_hex": "7665",
+    "left_repr": "b' ha'",
+    "right_repr": "b've'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "696e",
+    "left_repr": "b'a'",
+    "right_repr": "b'in'"
+  },
+  {
+    "left_hex": "6172",
+    "right_hex": "74",
+    "left_repr": "b'ar'",
+    "right_repr": "b't'"
+  },
+  {
+    "left_hex": "2065",
+    "right_hex": "78",
+    "left_repr": "b' e'",
+    "right_repr": "b'x'"
+  },
+  {
+    "left_hex": "6865",
+    "right_hex": "64",
+    "left_repr": "b'he'",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "72",
+    "right_hex": "6f6d",
+    "left_repr": "b'r'",
+    "right_repr": "b'om'"
+  },
+  {
+    "left_hex": "2077",
+    "right_hex": "656e74",
+    "left_repr": "b' w'",
+    "right_repr": "b'ent'"
+  },
+  {
+    "left_hex": "2061",
+    "right_hex": "72",
+    "left_repr": "b' a'",
+    "right_repr": "b'r'"
+  },
+  {
+    "left_hex": "69",
+    "right_hex": "63",
+    "left_repr": "b'i'",
+    "right_repr": "b'c'"
+  },
+  {
+    "left_hex": "2063",
+    "right_hex": "616e",
+    "left_repr": "b' c'",
+    "right_repr": "b'an'"
+  },
+  {
+    "left_hex": "20",
+    "right_hex": "4a",
+    "left_repr": "b' '",
+    "right_repr": "b'J'"
+  },
+  {
+    "left_hex": "6c",
+    "right_hex": "70",
+    "left_repr": "b'l'",
+    "right_repr": "b'p'"
+  },
+  {
+    "left_hex": "6675",
+    "right_hex": "6c",
+    "left_repr": "b'fu'",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "2042",
+    "right_hex": "656e",
+    "left_repr": "b' B'",
+    "right_repr": "b'en'"
+  },
+  {
+    "left_hex": "6f6f",
+    "right_hex": "64",
+    "left_repr": "b'oo'",
+    "right_repr": "b'd'"
+  },
+  {
+    "left_hex": "3f",
+    "right_hex": "22",
+    "left_repr": "b'?'",
+    "right_repr": "b'\"'"
+  },
+  {
+    "left_hex": "68",
+    "right_hex": "696e67",
+    "left_repr": "b'h'",
+    "right_repr": "b'ing'"
+  },
+  {
+    "left_hex": "20667269656e64",
+    "right_hex": "73",
+    "left_repr": "b' friend'",
+    "right_repr": "b's'"
+  },
+  {
+    "left_hex": "206e",
+    "right_hex": "616d",
+    "left_repr": "b' n'",
+    "right_repr": "b'am'"
+  },
+  {
+    "left_hex": "6967",
+    "right_hex": "6874",
+    "left_repr": "b'ig'",
+    "right_repr": "b'ht'"
+  },
+  {
+    "left_hex": "2061",
+    "right_hex": "6c6c",
+    "left_repr": "b' a'",
+    "right_repr": "b'll'"
+  },
+  {
+    "left_hex": "206865",
+    "right_hex": "6c70",
+    "left_repr": "b' he'",
+    "right_repr": "b'lp'"
+  },
+  {
+    "left_hex": "206b",
+    "right_hex": "6e",
+    "left_repr": "b' k'",
+    "right_repr": "b'n'"
+  },
+  {
+    "left_hex": "75",
+    "right_hex": "6d",
+    "left_repr": "b'u'",
+    "right_repr": "b'm'"
+  },
+  {
+    "left_hex": "6f6e",
+    "right_hex": "65",
+    "left_repr": "b'on'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "6172",
+    "right_hex": "6b",
+    "left_repr": "b'ar'",
+    "right_repr": "b'k'"
+  },
+  {
+    "left_hex": "2062",
+    "right_hex": "61636b",
+    "left_repr": "b' b'",
+    "right_repr": "b'ack'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "6179",
+    "left_repr": "b' s'",
+    "right_repr": "b'ay'"
+  },
+  {
+    "left_hex": "59",
+    "right_hex": "6f75",
+    "left_repr": "b'Y'",
+    "right_repr": "b'ou'"
+  },
+  {
+    "left_hex": "2066",
+    "right_hex": "756e",
+    "left_repr": "b' f'",
+    "right_repr": "b'un'"
+  },
+  {
+    "left_hex": "2063",
+    "right_hex": "6c",
+    "left_repr": "b' c'",
+    "right_repr": "b'l'"
+  },
+  {
+    "left_hex": "2054",
+    "right_hex": "6f6d",
+    "left_repr": "b' T'",
+    "right_repr": "b'om'"
+  },
+  {
+    "left_hex": "61",
+    "right_hex": "7265",
+    "left_repr": "b'a'",
+    "right_repr": "b're'"
+  },
+  {
+    "left_hex": "206e",
+    "right_hex": "6f",
+    "left_repr": "b' n'",
+    "right_repr": "b'o'"
+  },
+  {
+    "left_hex": "206c",
+    "right_hex": "65",
+    "left_repr": "b' l'",
+    "right_repr": "b'e'"
+  },
+  {
+    "left_hex": "6f",
+    "right_hex": "70",
+    "left_repr": "b'o'",
+    "right_repr": "b'p'"
+  },
+  {
+    "left_hex": "20736d696c",
+    "right_hex": "6564",
+    "left_repr": "b' smil'",
+    "right_repr": "b'ed'"
+  },
+  {
+    "left_hex": "2073",
+    "right_hex": "63",
+    "left_repr": "b' s'",
+    "right_repr": "b'c'"
+  },
+  {
+    "left_hex": "206e616d",
+    "right_hex": "6564",
+    "left_repr": "b' nam'",
+    "right_repr": "b'ed'"
+  }
+]

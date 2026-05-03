@@ -1,0 +1,2502 @@
+[
+  {
+    "token_id": 0,
+    "hex": "3c7c656e646f66746578747c3e",
+    "repr": "b'<|endoftext|>'"
+  },
+  {
+    "token_id": 1,
+    "hex": "00",
+    "repr": "b'\\x00'"
+  },
+  {
+    "token_id": 2,
+    "hex": "01",
+    "repr": "b'\\x01'"
+  },
+  {
+    "token_id": 3,
+    "hex": "02",
+    "repr": "b'\\x02'"
+  },
+  {
+    "token_id": 4,
+    "hex": "03",
+    "repr": "b'\\x03'"
+  },
+  {
+    "token_id": 5,
+    "hex": "04",
+    "repr": "b'\\x04'"
+  },
+  {
+    "token_id": 6,
+    "hex": "05",
+    "repr": "b'\\x05'"
+  },
+  {
+    "token_id": 7,
+    "hex": "06",
+    "repr": "b'\\x06'"
+  },
+  {
+    "token_id": 8,
+    "hex": "07",
+    "repr": "b'\\x07'"
+  },
+  {
+    "token_id": 9,
+    "hex": "08",
+    "repr": "b'\\x08'"
+  },
+  {
+    "token_id": 10,
+    "hex": "09",
+    "repr": "b'\\t'"
+  },
+  {
+    "token_id": 11,
+    "hex": "0a",
+    "repr": "b'\\n'"
+  },
+  {
+    "token_id": 12,
+    "hex": "0b",
+    "repr": "b'\\x0b'"
+  },
+  {
+    "token_id": 13,
+    "hex": "0c",
+    "repr": "b'\\x0c'"
+  },
+  {
+    "token_id": 14,
+    "hex": "0d",
+    "repr": "b'\\r'"
+  },
+  {
+    "token_id": 15,
+    "hex": "0e",
+    "repr": "b'\\x0e'"
+  },
+  {
+    "token_id": 16,
+    "hex": "0f",
+    "repr": "b'\\x0f'"
+  },
+  {
+    "token_id": 17,
+    "hex": "10",
+    "repr": "b'\\x10'"
+  },
+  {
+    "token_id": 18,
+    "hex": "11",
+    "repr": "b'\\x11'"
+  },
+  {
+    "token_id": 19,
+    "hex": "12",
+    "repr": "b'\\x12'"
+  },
+  {
+    "token_id": 20,
+    "hex": "13",
+    "repr": "b'\\x13'"
+  },
+  {
+    "token_id": 21,
+    "hex": "14",
+    "repr": "b'\\x14'"
+  },
+  {
+    "token_id": 22,
+    "hex": "15",
+    "repr": "b'\\x15'"
+  },
+  {
+    "token_id": 23,
+    "hex": "16",
+    "repr": "b'\\x16'"
+  },
+  {
+    "token_id": 24,
+    "hex": "17",
+    "repr": "b'\\x17'"
+  },
+  {
+    "token_id": 25,
+    "hex": "18",
+    "repr": "b'\\x18'"
+  },
+  {
+    "token_id": 26,
+    "hex": "19",
+    "repr": "b'\\x19'"
+  },
+  {
+    "token_id": 27,
+    "hex": "1a",
+    "repr": "b'\\x1a'"
+  },
+  {
+    "token_id": 28,
+    "hex": "1b",
+    "repr": "b'\\x1b'"
+  },
+  {
+    "token_id": 29,
+    "hex": "1c",
+    "repr": "b'\\x1c'"
+  },
+  {
+    "token_id": 30,
+    "hex": "1d",
+    "repr": "b'\\x1d'"
+  },
+  {
+    "token_id": 31,
+    "hex": "1e",
+    "repr": "b'\\x1e'"
+  },
+  {
+    "token_id": 32,
+    "hex": "1f",
+    "repr": "b'\\x1f'"
+  },
+  {
+    "token_id": 33,
+    "hex": "20",
+    "repr": "b' '"
+  },
+  {
+    "token_id": 34,
+    "hex": "21",
+    "repr": "b'!'"
+  },
+  {
+    "token_id": 35,
+    "hex": "22",
+    "repr": "b'\"'"
+  },
+  {
+    "token_id": 36,
+    "hex": "23",
+    "repr": "b'#'"
+  },
+  {
+    "token_id": 37,
+    "hex": "24",
+    "repr": "b'$'"
+  },
+  {
+    "token_id": 38,
+    "hex": "25",
+    "repr": "b'%'"
+  },
+  {
+    "token_id": 39,
+    "hex": "26",
+    "repr": "b'&'"
+  },
+  {
+    "token_id": 40,
+    "hex": "27",
+    "repr": "b\"'\""
+  },
+  {
+    "token_id": 41,
+    "hex": "28",
+    "repr": "b'('"
+  },
+  {
+    "token_id": 42,
+    "hex": "29",
+    "repr": "b')'"
+  },
+  {
+    "token_id": 43,
+    "hex": "2a",
+    "repr": "b'*'"
+  },
+  {
+    "token_id": 44,
+    "hex": "2b",
+    "repr": "b'+'"
+  },
+  {
+    "token_id": 45,
+    "hex": "2c",
+    "repr": "b','"
+  },
+  {
+    "token_id": 46,
+    "hex": "2d",
+    "repr": "b'-'"
+  },
+  {
+    "token_id": 47,
+    "hex": "2e",
+    "repr": "b'.'"
+  },
+  {
+    "token_id": 48,
+    "hex": "2f",
+    "repr": "b'/'"
+  },
+  {
+    "token_id": 49,
+    "hex": "30",
+    "repr": "b'0'"
+  },
+  {
+    "token_id": 50,
+    "hex": "31",
+    "repr": "b'1'"
+  },
+  {
+    "token_id": 51,
+    "hex": "32",
+    "repr": "b'2'"
+  },
+  {
+    "token_id": 52,
+    "hex": "33",
+    "repr": "b'3'"
+  },
+  {
+    "token_id": 53,
+    "hex": "34",
+    "repr": "b'4'"
+  },
+  {
+    "token_id": 54,
+    "hex": "35",
+    "repr": "b'5'"
+  },
+  {
+    "token_id": 55,
+    "hex": "36",
+    "repr": "b'6'"
+  },
+  {
+    "token_id": 56,
+    "hex": "37",
+    "repr": "b'7'"
+  },
+  {
+    "token_id": 57,
+    "hex": "38",
+    "repr": "b'8'"
+  },
+  {
+    "token_id": 58,
+    "hex": "39",
+    "repr": "b'9'"
+  },
+  {
+    "token_id": 59,
+    "hex": "3a",
+    "repr": "b':'"
+  },
+  {
+    "token_id": 60,
+    "hex": "3b",
+    "repr": "b';'"
+  },
+  {
+    "token_id": 61,
+    "hex": "3c",
+    "repr": "b'<'"
+  },
+  {
+    "token_id": 62,
+    "hex": "3d",
+    "repr": "b'='"
+  },
+  {
+    "token_id": 63,
+    "hex": "3e",
+    "repr": "b'>'"
+  },
+  {
+    "token_id": 64,
+    "hex": "3f",
+    "repr": "b'?'"
+  },
+  {
+    "token_id": 65,
+    "hex": "40",
+    "repr": "b'@'"
+  },
+  {
+    "token_id": 66,
+    "hex": "41",
+    "repr": "b'A'"
+  },
+  {
+    "token_id": 67,
+    "hex": "42",
+    "repr": "b'B'"
+  },
+  {
+    "token_id": 68,
+    "hex": "43",
+    "repr": "b'C'"
+  },
+  {
+    "token_id": 69,
+    "hex": "44",
+    "repr": "b'D'"
+  },
+  {
+    "token_id": 70,
+    "hex": "45",
+    "repr": "b'E'"
+  },
+  {
+    "token_id": 71,
+    "hex": "46",
+    "repr": "b'F'"
+  },
+  {
+    "token_id": 72,
+    "hex": "47",
+    "repr": "b'G'"
+  },
+  {
+    "token_id": 73,
+    "hex": "48",
+    "repr": "b'H'"
+  },
+  {
+    "token_id": 74,
+    "hex": "49",
+    "repr": "b'I'"
+  },
+  {
+    "token_id": 75,
+    "hex": "4a",
+    "repr": "b'J'"
+  },
+  {
+    "token_id": 76,
+    "hex": "4b",
+    "repr": "b'K'"
+  },
+  {
+    "token_id": 77,
+    "hex": "4c",
+    "repr": "b'L'"
+  },
+  {
+    "token_id": 78,
+    "hex": "4d",
+    "repr": "b'M'"
+  },
+  {
+    "token_id": 79,
+    "hex": "4e",
+    "repr": "b'N'"
+  },
+  {
+    "token_id": 80,
+    "hex": "4f",
+    "repr": "b'O'"
+  },
+  {
+    "token_id": 81,
+    "hex": "50",
+    "repr": "b'P'"
+  },
+  {
+    "token_id": 82,
+    "hex": "51",
+    "repr": "b'Q'"
+  },
+  {
+    "token_id": 83,
+    "hex": "52",
+    "repr": "b'R'"
+  },
+  {
+    "token_id": 84,
+    "hex": "53",
+    "repr": "b'S'"
+  },
+  {
+    "token_id": 85,
+    "hex": "54",
+    "repr": "b'T'"
+  },
+  {
+    "token_id": 86,
+    "hex": "55",
+    "repr": "b'U'"
+  },
+  {
+    "token_id": 87,
+    "hex": "56",
+    "repr": "b'V'"
+  },
+  {
+    "token_id": 88,
+    "hex": "57",
+    "repr": "b'W'"
+  },
+  {
+    "token_id": 89,
+    "hex": "58",
+    "repr": "b'X'"
+  },
+  {
+    "token_id": 90,
+    "hex": "59",
+    "repr": "b'Y'"
+  },
+  {
+    "token_id": 91,
+    "hex": "5a",
+    "repr": "b'Z'"
+  },
+  {
+    "token_id": 92,
+    "hex": "5b",
+    "repr": "b'['"
+  },
+  {
+    "token_id": 93,
+    "hex": "5c",
+    "repr": "b'\\\\'"
+  },
+  {
+    "token_id": 94,
+    "hex": "5d",
+    "repr": "b']'"
+  },
+  {
+    "token_id": 95,
+    "hex": "5e",
+    "repr": "b'^'"
+  },
+  {
+    "token_id": 96,
+    "hex": "5f",
+    "repr": "b'_'"
+  },
+  {
+    "token_id": 97,
+    "hex": "60",
+    "repr": "b'`'"
+  },
+  {
+    "token_id": 98,
+    "hex": "61",
+    "repr": "b'a'"
+  },
+  {
+    "token_id": 99,
+    "hex": "62",
+    "repr": "b'b'"
+  },
+  {
+    "token_id": 100,
+    "hex": "63",
+    "repr": "b'c'"
+  },
+  {
+    "token_id": 101,
+    "hex": "64",
+    "repr": "b'd'"
+  },
+  {
+    "token_id": 102,
+    "hex": "65",
+    "repr": "b'e'"
+  },
+  {
+    "token_id": 103,
+    "hex": "66",
+    "repr": "b'f'"
+  },
+  {
+    "token_id": 104,
+    "hex": "67",
+    "repr": "b'g'"
+  },
+  {
+    "token_id": 105,
+    "hex": "68",
+    "repr": "b'h'"
+  },
+  {
+    "token_id": 106,
+    "hex": "69",
+    "repr": "b'i'"
+  },
+  {
+    "token_id": 107,
+    "hex": "6a",
+    "repr": "b'j'"
+  },
+  {
+    "token_id": 108,
+    "hex": "6b",
+    "repr": "b'k'"
+  },
+  {
+    "token_id": 109,
+    "hex": "6c",
+    "repr": "b'l'"
+  },
+  {
+    "token_id": 110,
+    "hex": "6d",
+    "repr": "b'm'"
+  },
+  {
+    "token_id": 111,
+    "hex": "6e",
+    "repr": "b'n'"
+  },
+  {
+    "token_id": 112,
+    "hex": "6f",
+    "repr": "b'o'"
+  },
+  {
+    "token_id": 113,
+    "hex": "70",
+    "repr": "b'p'"
+  },
+  {
+    "token_id": 114,
+    "hex": "71",
+    "repr": "b'q'"
+  },
+  {
+    "token_id": 115,
+    "hex": "72",
+    "repr": "b'r'"
+  },
+  {
+    "token_id": 116,
+    "hex": "73",
+    "repr": "b's'"
+  },
+  {
+    "token_id": 117,
+    "hex": "74",
+    "repr": "b't'"
+  },
+  {
+    "token_id": 118,
+    "hex": "75",
+    "repr": "b'u'"
+  },
+  {
+    "token_id": 119,
+    "hex": "76",
+    "repr": "b'v'"
+  },
+  {
+    "token_id": 120,
+    "hex": "77",
+    "repr": "b'w'"
+  },
+  {
+    "token_id": 121,
+    "hex": "78",
+    "repr": "b'x'"
+  },
+  {
+    "token_id": 122,
+    "hex": "79",
+    "repr": "b'y'"
+  },
+  {
+    "token_id": 123,
+    "hex": "7a",
+    "repr": "b'z'"
+  },
+  {
+    "token_id": 124,
+    "hex": "7b",
+    "repr": "b'{'"
+  },
+  {
+    "token_id": 125,
+    "hex": "7c",
+    "repr": "b'|'"
+  },
+  {
+    "token_id": 126,
+    "hex": "7d",
+    "repr": "b'}'"
+  },
+  {
+    "token_id": 127,
+    "hex": "7e",
+    "repr": "b'~'"
+  },
+  {
+    "token_id": 128,
+    "hex": "7f",
+    "repr": "b'\\x7f'"
+  },
+  {
+    "token_id": 129,
+    "hex": "80",
+    "repr": "b'\\x80'"
+  },
+  {
+    "token_id": 130,
+    "hex": "81",
+    "repr": "b'\\x81'"
+  },
+  {
+    "token_id": 131,
+    "hex": "82",
+    "repr": "b'\\x82'"
+  },
+  {
+    "token_id": 132,
+    "hex": "83",
+    "repr": "b'\\x83'"
+  },
+  {
+    "token_id": 133,
+    "hex": "84",
+    "repr": "b'\\x84'"
+  },
+  {
+    "token_id": 134,
+    "hex": "85",
+    "repr": "b'\\x85'"
+  },
+  {
+    "token_id": 135,
+    "hex": "86",
+    "repr": "b'\\x86'"
+  },
+  {
+    "token_id": 136,
+    "hex": "87",
+    "repr": "b'\\x87'"
+  },
+  {
+    "token_id": 137,
+    "hex": "88",
+    "repr": "b'\\x88'"
+  },
+  {
+    "token_id": 138,
+    "hex": "89",
+    "repr": "b'\\x89'"
+  },
+  {
+    "token_id": 139,
+    "hex": "8a",
+    "repr": "b'\\x8a'"
+  },
+  {
+    "token_id": 140,
+    "hex": "8b",
+    "repr": "b'\\x8b'"
+  },
+  {
+    "token_id": 141,
+    "hex": "8c",
+    "repr": "b'\\x8c'"
+  },
+  {
+    "token_id": 142,
+    "hex": "8d",
+    "repr": "b'\\x8d'"
+  },
+  {
+    "token_id": 143,
+    "hex": "8e",
+    "repr": "b'\\x8e'"
+  },
+  {
+    "token_id": 144,
+    "hex": "8f",
+    "repr": "b'\\x8f'"
+  },
+  {
+    "token_id": 145,
+    "hex": "90",
+    "repr": "b'\\x90'"
+  },
+  {
+    "token_id": 146,
+    "hex": "91",
+    "repr": "b'\\x91'"
+  },
+  {
+    "token_id": 147,
+    "hex": "92",
+    "repr": "b'\\x92'"
+  },
+  {
+    "token_id": 148,
+    "hex": "93",
+    "repr": "b'\\x93'"
+  },
+  {
+    "token_id": 149,
+    "hex": "94",
+    "repr": "b'\\x94'"
+  },
+  {
+    "token_id": 150,
+    "hex": "95",
+    "repr": "b'\\x95'"
+  },
+  {
+    "token_id": 151,
+    "hex": "96",
+    "repr": "b'\\x96'"
+  },
+  {
+    "token_id": 152,
+    "hex": "97",
+    "repr": "b'\\x97'"
+  },
+  {
+    "token_id": 153,
+    "hex": "98",
+    "repr": "b'\\x98'"
+  },
+  {
+    "token_id": 154,
+    "hex": "99",
+    "repr": "b'\\x99'"
+  },
+  {
+    "token_id": 155,
+    "hex": "9a",
+    "repr": "b'\\x9a'"
+  },
+  {
+    "token_id": 156,
+    "hex": "9b",
+    "repr": "b'\\x9b'"
+  },
+  {
+    "token_id": 157,
+    "hex": "9c",
+    "repr": "b'\\x9c'"
+  },
+  {
+    "token_id": 158,
+    "hex": "9d",
+    "repr": "b'\\x9d'"
+  },
+  {
+    "token_id": 159,
+    "hex": "9e",
+    "repr": "b'\\x9e'"
+  },
+  {
+    "token_id": 160,
+    "hex": "9f",
+    "repr": "b'\\x9f'"
+  },
+  {
+    "token_id": 161,
+    "hex": "a0",
+    "repr": "b'\\xa0'"
+  },
+  {
+    "token_id": 162,
+    "hex": "a1",
+    "repr": "b'\\xa1'"
+  },
+  {
+    "token_id": 163,
+    "hex": "a2",
+    "repr": "b'\\xa2'"
+  },
+  {
+    "token_id": 164,
+    "hex": "a3",
+    "repr": "b'\\xa3'"
+  },
+  {
+    "token_id": 165,
+    "hex": "a4",
+    "repr": "b'\\xa4'"
+  },
+  {
+    "token_id": 166,
+    "hex": "a5",
+    "repr": "b'\\xa5'"
+  },
+  {
+    "token_id": 167,
+    "hex": "a6",
+    "repr": "b'\\xa6'"
+  },
+  {
+    "token_id": 168,
+    "hex": "a7",
+    "repr": "b'\\xa7'"
+  },
+  {
+    "token_id": 169,
+    "hex": "a8",
+    "repr": "b'\\xa8'"
+  },
+  {
+    "token_id": 170,
+    "hex": "a9",
+    "repr": "b'\\xa9'"
+  },
+  {
+    "token_id": 171,
+    "hex": "aa",
+    "repr": "b'\\xaa'"
+  },
+  {
+    "token_id": 172,
+    "hex": "ab",
+    "repr": "b'\\xab'"
+  },
+  {
+    "token_id": 173,
+    "hex": "ac",
+    "repr": "b'\\xac'"
+  },
+  {
+    "token_id": 174,
+    "hex": "ad",
+    "repr": "b'\\xad'"
+  },
+  {
+    "token_id": 175,
+    "hex": "ae",
+    "repr": "b'\\xae'"
+  },
+  {
+    "token_id": 176,
+    "hex": "af",
+    "repr": "b'\\xaf'"
+  },
+  {
+    "token_id": 177,
+    "hex": "b0",
+    "repr": "b'\\xb0'"
+  },
+  {
+    "token_id": 178,
+    "hex": "b1",
+    "repr": "b'\\xb1'"
+  },
+  {
+    "token_id": 179,
+    "hex": "b2",
+    "repr": "b'\\xb2'"
+  },
+  {
+    "token_id": 180,
+    "hex": "b3",
+    "repr": "b'\\xb3'"
+  },
+  {
+    "token_id": 181,
+    "hex": "b4",
+    "repr": "b'\\xb4'"
+  },
+  {
+    "token_id": 182,
+    "hex": "b5",
+    "repr": "b'\\xb5'"
+  },
+  {
+    "token_id": 183,
+    "hex": "b6",
+    "repr": "b'\\xb6'"
+  },
+  {
+    "token_id": 184,
+    "hex": "b7",
+    "repr": "b'\\xb7'"
+  },
+  {
+    "token_id": 185,
+    "hex": "b8",
+    "repr": "b'\\xb8'"
+  },
+  {
+    "token_id": 186,
+    "hex": "b9",
+    "repr": "b'\\xb9'"
+  },
+  {
+    "token_id": 187,
+    "hex": "ba",
+    "repr": "b'\\xba'"
+  },
+  {
+    "token_id": 188,
+    "hex": "bb",
+    "repr": "b'\\xbb'"
+  },
+  {
+    "token_id": 189,
+    "hex": "bc",
+    "repr": "b'\\xbc'"
+  },
+  {
+    "token_id": 190,
+    "hex": "bd",
+    "repr": "b'\\xbd'"
+  },
+  {
+    "token_id": 191,
+    "hex": "be",
+    "repr": "b'\\xbe'"
+  },
+  {
+    "token_id": 192,
+    "hex": "bf",
+    "repr": "b'\\xbf'"
+  },
+  {
+    "token_id": 193,
+    "hex": "c0",
+    "repr": "b'\\xc0'"
+  },
+  {
+    "token_id": 194,
+    "hex": "c1",
+    "repr": "b'\\xc1'"
+  },
+  {
+    "token_id": 195,
+    "hex": "c2",
+    "repr": "b'\\xc2'"
+  },
+  {
+    "token_id": 196,
+    "hex": "c3",
+    "repr": "b'\\xc3'"
+  },
+  {
+    "token_id": 197,
+    "hex": "c4",
+    "repr": "b'\\xc4'"
+  },
+  {
+    "token_id": 198,
+    "hex": "c5",
+    "repr": "b'\\xc5'"
+  },
+  {
+    "token_id": 199,
+    "hex": "c6",
+    "repr": "b'\\xc6'"
+  },
+  {
+    "token_id": 200,
+    "hex": "c7",
+    "repr": "b'\\xc7'"
+  },
+  {
+    "token_id": 201,
+    "hex": "c8",
+    "repr": "b'\\xc8'"
+  },
+  {
+    "token_id": 202,
+    "hex": "c9",
+    "repr": "b'\\xc9'"
+  },
+  {
+    "token_id": 203,
+    "hex": "ca",
+    "repr": "b'\\xca'"
+  },
+  {
+    "token_id": 204,
+    "hex": "cb",
+    "repr": "b'\\xcb'"
+  },
+  {
+    "token_id": 205,
+    "hex": "cc",
+    "repr": "b'\\xcc'"
+  },
+  {
+    "token_id": 206,
+    "hex": "cd",
+    "repr": "b'\\xcd'"
+  },
+  {
+    "token_id": 207,
+    "hex": "ce",
+    "repr": "b'\\xce'"
+  },
+  {
+    "token_id": 208,
+    "hex": "cf",
+    "repr": "b'\\xcf'"
+  },
+  {
+    "token_id": 209,
+    "hex": "d0",
+    "repr": "b'\\xd0'"
+  },
+  {
+    "token_id": 210,
+    "hex": "d1",
+    "repr": "b'\\xd1'"
+  },
+  {
+    "token_id": 211,
+    "hex": "d2",
+    "repr": "b'\\xd2'"
+  },
+  {
+    "token_id": 212,
+    "hex": "d3",
+    "repr": "b'\\xd3'"
+  },
+  {
+    "token_id": 213,
+    "hex": "d4",
+    "repr": "b'\\xd4'"
+  },
+  {
+    "token_id": 214,
+    "hex": "d5",
+    "repr": "b'\\xd5'"
+  },
+  {
+    "token_id": 215,
+    "hex": "d6",
+    "repr": "b'\\xd6'"
+  },
+  {
+    "token_id": 216,
+    "hex": "d7",
+    "repr": "b'\\xd7'"
+  },
+  {
+    "token_id": 217,
+    "hex": "d8",
+    "repr": "b'\\xd8'"
+  },
+  {
+    "token_id": 218,
+    "hex": "d9",
+    "repr": "b'\\xd9'"
+  },
+  {
+    "token_id": 219,
+    "hex": "da",
+    "repr": "b'\\xda'"
+  },
+  {
+    "token_id": 220,
+    "hex": "db",
+    "repr": "b'\\xdb'"
+  },
+  {
+    "token_id": 221,
+    "hex": "dc",
+    "repr": "b'\\xdc'"
+  },
+  {
+    "token_id": 222,
+    "hex": "dd",
+    "repr": "b'\\xdd'"
+  },
+  {
+    "token_id": 223,
+    "hex": "de",
+    "repr": "b'\\xde'"
+  },
+  {
+    "token_id": 224,
+    "hex": "df",
+    "repr": "b'\\xdf'"
+  },
+  {
+    "token_id": 225,
+    "hex": "e0",
+    "repr": "b'\\xe0'"
+  },
+  {
+    "token_id": 226,
+    "hex": "e1",
+    "repr": "b'\\xe1'"
+  },
+  {
+    "token_id": 227,
+    "hex": "e2",
+    "repr": "b'\\xe2'"
+  },
+  {
+    "token_id": 228,
+    "hex": "e3",
+    "repr": "b'\\xe3'"
+  },
+  {
+    "token_id": 229,
+    "hex": "e4",
+    "repr": "b'\\xe4'"
+  },
+  {
+    "token_id": 230,
+    "hex": "e5",
+    "repr": "b'\\xe5'"
+  },
+  {
+    "token_id": 231,
+    "hex": "e6",
+    "repr": "b'\\xe6'"
+  },
+  {
+    "token_id": 232,
+    "hex": "e7",
+    "repr": "b'\\xe7'"
+  },
+  {
+    "token_id": 233,
+    "hex": "e8",
+    "repr": "b'\\xe8'"
+  },
+  {
+    "token_id": 234,
+    "hex": "e9",
+    "repr": "b'\\xe9'"
+  },
+  {
+    "token_id": 235,
+    "hex": "ea",
+    "repr": "b'\\xea'"
+  },
+  {
+    "token_id": 236,
+    "hex": "eb",
+    "repr": "b'\\xeb'"
+  },
+  {
+    "token_id": 237,
+    "hex": "ec",
+    "repr": "b'\\xec'"
+  },
+  {
+    "token_id": 238,
+    "hex": "ed",
+    "repr": "b'\\xed'"
+  },
+  {
+    "token_id": 239,
+    "hex": "ee",
+    "repr": "b'\\xee'"
+  },
+  {
+    "token_id": 240,
+    "hex": "ef",
+    "repr": "b'\\xef'"
+  },
+  {
+    "token_id": 241,
+    "hex": "f0",
+    "repr": "b'\\xf0'"
+  },
+  {
+    "token_id": 242,
+    "hex": "f1",
+    "repr": "b'\\xf1'"
+  },
+  {
+    "token_id": 243,
+    "hex": "f2",
+    "repr": "b'\\xf2'"
+  },
+  {
+    "token_id": 244,
+    "hex": "f3",
+    "repr": "b'\\xf3'"
+  },
+  {
+    "token_id": 245,
+    "hex": "f4",
+    "repr": "b'\\xf4'"
+  },
+  {
+    "token_id": 246,
+    "hex": "f5",
+    "repr": "b'\\xf5'"
+  },
+  {
+    "token_id": 247,
+    "hex": "f6",
+    "repr": "b'\\xf6'"
+  },
+  {
+    "token_id": 248,
+    "hex": "f7",
+    "repr": "b'\\xf7'"
+  },
+  {
+    "token_id": 249,
+    "hex": "f8",
+    "repr": "b'\\xf8'"
+  },
+  {
+    "token_id": 250,
+    "hex": "f9",
+    "repr": "b'\\xf9'"
+  },
+  {
+    "token_id": 251,
+    "hex": "fa",
+    "repr": "b'\\xfa'"
+  },
+  {
+    "token_id": 252,
+    "hex": "fb",
+    "repr": "b'\\xfb'"
+  },
+  {
+    "token_id": 253,
+    "hex": "fc",
+    "repr": "b'\\xfc'"
+  },
+  {
+    "token_id": 254,
+    "hex": "fd",
+    "repr": "b'\\xfd'"
+  },
+  {
+    "token_id": 255,
+    "hex": "fe",
+    "repr": "b'\\xfe'"
+  },
+  {
+    "token_id": 256,
+    "hex": "ff",
+    "repr": "b'\\xff'"
+  },
+  {
+    "token_id": 257,
+    "hex": "6865",
+    "repr": "b'he'"
+  },
+  {
+    "token_id": 258,
+    "hex": "2074",
+    "repr": "b' t'"
+  },
+  {
+    "token_id": 259,
+    "hex": "2061",
+    "repr": "b' a'"
+  },
+  {
+    "token_id": 260,
+    "hex": "2073",
+    "repr": "b' s'"
+  },
+  {
+    "token_id": 261,
+    "hex": "2077",
+    "repr": "b' w'"
+  },
+  {
+    "token_id": 262,
+    "hex": "6e64",
+    "repr": "b'nd'"
+  },
+  {
+    "token_id": 263,
+    "hex": "20746865",
+    "repr": "b' the'"
+  },
+  {
+    "token_id": 264,
+    "hex": "6564",
+    "repr": "b'ed'"
+  },
+  {
+    "token_id": 265,
+    "hex": "20616e64",
+    "repr": "b' and'"
+  },
+  {
+    "token_id": 266,
+    "hex": "20746f",
+    "repr": "b' to'"
+  },
+  {
+    "token_id": 267,
+    "hex": "2062",
+    "repr": "b' b'"
+  },
+  {
+    "token_id": 268,
+    "hex": "696e",
+    "repr": "b'in'"
+  },
+  {
+    "token_id": 269,
+    "hex": "2068",
+    "repr": "b' h'"
+  },
+  {
+    "token_id": 270,
+    "hex": "207761",
+    "repr": "b' wa'"
+  },
+  {
+    "token_id": 271,
+    "hex": "7265",
+    "repr": "b're'"
+  },
+  {
+    "token_id": 272,
+    "hex": "6f75",
+    "repr": "b'ou'"
+  },
+  {
+    "token_id": 273,
+    "hex": "2066",
+    "repr": "b' f'"
+  },
+  {
+    "token_id": 274,
+    "hex": "6974",
+    "repr": "b'it'"
+  },
+  {
+    "token_id": 275,
+    "hex": "206c",
+    "repr": "b' l'"
+  },
+  {
+    "token_id": 276,
+    "hex": "2063",
+    "repr": "b' c'"
+  },
+  {
+    "token_id": 277,
+    "hex": "2064",
+    "repr": "b' d'"
+  },
+  {
+    "token_id": 278,
+    "hex": "6572",
+    "repr": "b'er'"
+  },
+  {
+    "token_id": 279,
+    "hex": "206865",
+    "repr": "b' he'"
+  },
+  {
+    "token_id": 280,
+    "hex": "206d",
+    "repr": "b' m'"
+  },
+  {
+    "token_id": 281,
+    "hex": "2070",
+    "repr": "b' p'"
+  },
+  {
+    "token_id": 282,
+    "hex": "20776173",
+    "repr": "b' was'"
+  },
+  {
+    "token_id": 283,
+    "hex": "6f6d",
+    "repr": "b'om'"
+  },
+  {
+    "token_id": 284,
+    "hex": "2054",
+    "repr": "b' T'"
+  },
+  {
+    "token_id": 285,
+    "hex": "206f",
+    "repr": "b' o'"
+  },
+  {
+    "token_id": 286,
+    "hex": "6179",
+    "repr": "b'ay'"
+  },
+  {
+    "token_id": 287,
+    "hex": "6172",
+    "repr": "b'ar'"
+  },
+  {
+    "token_id": 288,
+    "hex": "6973",
+    "repr": "b'is'"
+  },
+  {
+    "token_id": 289,
+    "hex": "696e67",
+    "repr": "b'ing'"
+  },
+  {
+    "token_id": 290,
+    "hex": "696c",
+    "repr": "b'il'"
+  },
+  {
+    "token_id": 291,
+    "hex": "2067",
+    "repr": "b' g'"
+  },
+  {
+    "token_id": 292,
+    "hex": "6964",
+    "repr": "b'id'"
+  },
+  {
+    "token_id": 293,
+    "hex": "6174",
+    "repr": "b'at'"
+  },
+  {
+    "token_id": 294,
+    "hex": "656e",
+    "repr": "b'en'"
+  },
+  {
+    "token_id": 295,
+    "hex": "206e",
+    "repr": "b' n'"
+  },
+  {
+    "token_id": 296,
+    "hex": "207361",
+    "repr": "b' sa'"
+  },
+  {
+    "token_id": 297,
+    "hex": "206861",
+    "repr": "b' ha'"
+  },
+  {
+    "token_id": 298,
+    "hex": "2053",
+    "repr": "b' S'"
+  },
+  {
+    "token_id": 299,
+    "hex": "20546865",
+    "repr": "b' The'"
+  },
+  {
+    "token_id": 300,
+    "hex": "616e",
+    "repr": "b'an'"
+  },
+  {
+    "token_id": 301,
+    "hex": "696d",
+    "repr": "b'im'"
+  },
+  {
+    "token_id": 302,
+    "hex": "6f72",
+    "repr": "b'or'"
+  },
+  {
+    "token_id": 303,
+    "hex": "6f6e",
+    "repr": "b'on'"
+  },
+  {
+    "token_id": 304,
+    "hex": "206974",
+    "repr": "b' it'"
+  },
+  {
+    "token_id": 305,
+    "hex": "207468",
+    "repr": "b' th'"
+  },
+  {
+    "token_id": 306,
+    "hex": "6c6c",
+    "repr": "b'll'"
+  },
+  {
+    "token_id": 307,
+    "hex": "6c65",
+    "repr": "b'le'"
+  },
+  {
+    "token_id": 308,
+    "hex": "2048",
+    "repr": "b' H'"
+  },
+  {
+    "token_id": 309,
+    "hex": "20686572",
+    "repr": "b' her'"
+  },
+  {
+    "token_id": 310,
+    "hex": "6f74",
+    "repr": "b'ot'"
+  },
+  {
+    "token_id": 311,
+    "hex": "6574",
+    "repr": "b'et'"
+  },
+  {
+    "token_id": 312,
+    "hex": "6972",
+    "repr": "b'ir'"
+  },
+  {
+    "token_id": 313,
+    "hex": "20536865",
+    "repr": "b' She'"
+  },
+  {
+    "token_id": 314,
+    "hex": "6573",
+    "repr": "b'es'"
+  },
+  {
+    "token_id": 315,
+    "hex": "204865",
+    "repr": "b' He'"
+  },
+  {
+    "token_id": 316,
+    "hex": "20696e",
+    "repr": "b' in'"
+  },
+  {
+    "token_id": 317,
+    "hex": "766572",
+    "repr": "b'ver'"
+  },
+  {
+    "token_id": 318,
+    "hex": "7574",
+    "repr": "b'ut'"
+  },
+  {
+    "token_id": 319,
+    "hex": "6f77",
+    "repr": "b'ow'"
+  },
+  {
+    "token_id": 320,
+    "hex": "2054686579",
+    "repr": "b' They'"
+  },
+  {
+    "token_id": 321,
+    "hex": "636b",
+    "repr": "b'ck'"
+  },
+  {
+    "token_id": 322,
+    "hex": "2065",
+    "repr": "b' e'"
+  },
+  {
+    "token_id": 323,
+    "hex": "2075",
+    "repr": "b' u'"
+  },
+  {
+    "token_id": 324,
+    "hex": "6c64",
+    "repr": "b'ld'"
+  },
+  {
+    "token_id": 325,
+    "hex": "2079",
+    "repr": "b' y'"
+  },
+  {
+    "token_id": 326,
+    "hex": "6f6f",
+    "repr": "b'oo'"
+  },
+  {
+    "token_id": 327,
+    "hex": "2073616964",
+    "repr": "b' said'"
+  },
+  {
+    "token_id": 328,
+    "hex": "6967",
+    "repr": "b'ig'"
+  },
+  {
+    "token_id": 329,
+    "hex": "2022",
+    "repr": "b' \"'"
+  },
+  {
+    "token_id": 330,
+    "hex": "696c79",
+    "repr": "b'ily'"
+  },
+  {
+    "token_id": 331,
+    "hex": "2072",
+    "repr": "b' r'"
+  },
+  {
+    "token_id": 332,
+    "hex": "206265",
+    "repr": "b' be'"
+  },
+  {
+    "token_id": 333,
+    "hex": "616d",
+    "repr": "b'am'"
+  },
+  {
+    "token_id": 334,
+    "hex": "207374",
+    "repr": "b' st'"
+  },
+  {
+    "token_id": 335,
+    "hex": "2049",
+    "repr": "b' I'"
+  },
+  {
+    "token_id": 336,
+    "hex": "6365",
+    "repr": "b'ce'"
+  },
+  {
+    "token_id": 337,
+    "hex": "6b65",
+    "repr": "b'ke'"
+  },
+  {
+    "token_id": 338,
+    "hex": "20736865",
+    "repr": "b' she'"
+  },
+  {
+    "token_id": 339,
+    "hex": "7665",
+    "repr": "b've'"
+  },
+  {
+    "token_id": 340,
+    "hex": "7070",
+    "repr": "b'pp'"
+  },
+  {
+    "token_id": 341,
+    "hex": "697468",
+    "repr": "b'ith'"
+  },
+  {
+    "token_id": 342,
+    "hex": "2077697468",
+    "repr": "b' with'"
+  },
+  {
+    "token_id": 343,
+    "hex": "4c696c79",
+    "repr": "b'Lily'"
+  },
+  {
+    "token_id": 344,
+    "hex": "4f6e",
+    "repr": "b'On'"
+  },
+  {
+    "token_id": 345,
+    "hex": "206f6e",
+    "repr": "b' on'"
+  },
+  {
+    "token_id": 346,
+    "hex": "20796f75",
+    "repr": "b' you'"
+  },
+  {
+    "token_id": 347,
+    "hex": "206f66",
+    "repr": "b' of'"
+  },
+  {
+    "token_id": 348,
+    "hex": "6b6564",
+    "repr": "b'ked'"
+  },
+  {
+    "token_id": 349,
+    "hex": "7269",
+    "repr": "b'ri'"
+  },
+  {
+    "token_id": 350,
+    "hex": "20736f",
+    "repr": "b' so'"
+  },
+  {
+    "token_id": 351,
+    "hex": "6e74",
+    "repr": "b'nt'"
+  },
+  {
+    "token_id": 352,
+    "hex": "20686973",
+    "repr": "b' his'"
+  },
+  {
+    "token_id": 353,
+    "hex": "20706c",
+    "repr": "b' pl'"
+  },
+  {
+    "token_id": 354,
+    "hex": "6164",
+    "repr": "b'ad'"
+  },
+  {
+    "token_id": 355,
+    "hex": "76657279",
+    "repr": "b'very'"
+  },
+  {
+    "token_id": 356,
+    "hex": "20646179",
+    "repr": "b' day'"
+  },
+  {
+    "token_id": 357,
+    "hex": "2074686174",
+    "repr": "b' that'"
+  },
+  {
+    "token_id": 358,
+    "hex": "207570",
+    "repr": "b' up'"
+  },
+  {
+    "token_id": 359,
+    "hex": "20706c6179",
+    "repr": "b' play'"
+  },
+  {
+    "token_id": 360,
+    "hex": "20686164",
+    "repr": "b' had'"
+  },
+  {
+    "token_id": 361,
+    "hex": "7374",
+    "repr": "b'st'"
+  },
+  {
+    "token_id": 362,
+    "hex": "2074686579",
+    "repr": "b' they'"
+  },
+  {
+    "token_id": 363,
+    "hex": "207765",
+    "repr": "b' we'"
+  },
+  {
+    "token_id": 364,
+    "hex": "204c696c79",
+    "repr": "b' Lily'"
+  },
+  {
+    "token_id": 365,
+    "hex": "206d6f6d",
+    "repr": "b' mom'"
+  },
+  {
+    "token_id": 366,
+    "hex": "20666f72",
+    "repr": "b' for'"
+  },
+  {
+    "token_id": 367,
+    "hex": "2042",
+    "repr": "b' B'"
+  },
+  {
+    "token_id": 368,
+    "hex": "656c",
+    "repr": "b'el'"
+  },
+  {
+    "token_id": 369,
+    "hex": "756e",
+    "repr": "b'un'"
+  },
+  {
+    "token_id": 370,
+    "hex": "6f756c64",
+    "repr": "b'ould'"
+  },
+  {
+    "token_id": 371,
+    "hex": "2773",
+    "repr": "b\"'s\""
+  },
+  {
+    "token_id": 372,
+    "hex": "6d79",
+    "repr": "b'my'"
+  },
+  {
+    "token_id": 373,
+    "hex": "546865",
+    "repr": "b'The'"
+  },
+  {
+    "token_id": 374,
+    "hex": "206c69",
+    "repr": "b' li'"
+  },
+  {
+    "token_id": 375,
+    "hex": "6368",
+    "repr": "b'ch'"
+  },
+  {
+    "token_id": 376,
+    "hex": "656e74",
+    "repr": "b'ent'"
+  },
+  {
+    "token_id": 377,
+    "hex": "2068617070",
+    "repr": "b' happ'"
+  },
+  {
+    "token_id": 378,
+    "hex": "2077616e74",
+    "repr": "b' want'"
+  },
+  {
+    "token_id": 379,
+    "hex": "697474",
+    "repr": "b'itt'"
+  },
+  {
+    "token_id": 380,
+    "hex": "207368",
+    "repr": "b' sh'"
+  },
+  {
+    "token_id": 381,
+    "hex": "6f7574",
+    "repr": "b'out'"
+  },
+  {
+    "token_id": 382,
+    "hex": "686572",
+    "repr": "b'her'"
+  },
+  {
+    "token_id": 383,
+    "hex": "20646f",
+    "repr": "b' do'"
+  },
+  {
+    "token_id": 384,
+    "hex": "6c79",
+    "repr": "b'ly'"
+  },
+  {
+    "token_id": 385,
+    "hex": "206e6f74",
+    "repr": "b' not'"
+  },
+  {
+    "token_id": 386,
+    "hex": "6f6d65",
+    "repr": "b'ome'"
+  },
+  {
+    "token_id": 387,
+    "hex": "7365",
+    "repr": "b'se'"
+  },
+  {
+    "token_id": 388,
+    "hex": "2076657279",
+    "repr": "b' very'"
+  },
+  {
+    "token_id": 389,
+    "hex": "6f756e64",
+    "repr": "b'ound'"
+  },
+  {
+    "token_id": 390,
+    "hex": "656e64",
+    "repr": "b'end'"
+  },
+  {
+    "token_id": 391,
+    "hex": "616c6c",
+    "repr": "b'all'"
+  },
+  {
+    "token_id": 392,
+    "hex": "207768",
+    "repr": "b' wh'"
+  },
+  {
+    "token_id": 393,
+    "hex": "696d65",
+    "repr": "b'ime'"
+  },
+  {
+    "token_id": 394,
+    "hex": "6974746c65",
+    "repr": "b'ittle'"
+  },
+  {
+    "token_id": 395,
+    "hex": "206b",
+    "repr": "b' k'"
+  },
+  {
+    "token_id": 396,
+    "hex": "2074696d65",
+    "repr": "b' time'"
+  },
+  {
+    "token_id": 397,
+    "hex": "206c6974746c65",
+    "repr": "b' little'"
+  },
+  {
+    "token_id": 398,
+    "hex": "616c",
+    "repr": "b'al'"
+  },
+  {
+    "token_id": 399,
+    "hex": "207468657265",
+    "repr": "b' there'"
+  },
+  {
+    "token_id": 400,
+    "hex": "206e65",
+    "repr": "b' ne'"
+  },
+  {
+    "token_id": 401,
+    "hex": "6874",
+    "repr": "b'ht'"
+  },
+  {
+    "token_id": 402,
+    "hex": "204d",
+    "repr": "b' M'"
+  },
+  {
+    "token_id": 403,
+    "hex": "207265",
+    "repr": "b' re'"
+  },
+  {
+    "token_id": 404,
+    "hex": "206861707079",
+    "repr": "b' happy'"
+  },
+  {
+    "token_id": 405,
+    "hex": "20736d",
+    "repr": "b' sm'"
+  },
+  {
+    "token_id": 406,
+    "hex": "20626967",
+    "repr": "b' big'"
+  },
+  {
+    "token_id": 407,
+    "hex": "206973",
+    "repr": "b' is'"
+  },
+  {
+    "token_id": 408,
+    "hex": "204974",
+    "repr": "b' It'"
+  },
+  {
+    "token_id": 409,
+    "hex": "20627574",
+    "repr": "b' but'"
+  },
+  {
+    "token_id": 410,
+    "hex": "61636b",
+    "repr": "b'ack'"
+  },
+  {
+    "token_id": 411,
+    "hex": "20616e",
+    "repr": "b' an'"
+  },
+  {
+    "token_id": 412,
+    "hex": "20736177",
+    "repr": "b' saw'"
+  },
+  {
+    "token_id": 413,
+    "hex": "7269656e64",
+    "repr": "b'riend'"
+  },
+  {
+    "token_id": 414,
+    "hex": "2e22",
+    "repr": "b'.\"'"
+  },
+  {
+    "token_id": 415,
+    "hex": "20667269656e64",
+    "repr": "b' friend'"
+  },
+  {
+    "token_id": 416,
+    "hex": "7279",
+    "repr": "b'ry'"
+  },
+  {
+    "token_id": 417,
+    "hex": "206173",
+    "repr": "b' as'"
+  },
+  {
+    "token_id": 418,
+    "hex": "7261",
+    "repr": "b'ra'"
+  },
+  {
+    "token_id": 419,
+    "hex": "4f6e65",
+    "repr": "b'One'"
+  },
+  {
+    "token_id": 420,
+    "hex": "696465",
+    "repr": "b'ide'"
+  },
+  {
+    "token_id": 421,
+    "hex": "616b65",
+    "repr": "b'ake'"
+  },
+  {
+    "token_id": 422,
+    "hex": "2774",
+    "repr": "b\"'t\""
+  },
+  {
+    "token_id": 423,
+    "hex": "2122",
+    "repr": "b'!\"'"
+  },
+  {
+    "token_id": 424,
+    "hex": "7567",
+    "repr": "b'ug'"
+  },
+  {
+    "token_id": 425,
+    "hex": "206c6f6f",
+    "repr": "b' loo'"
+  },
+  {
+    "token_id": 426,
+    "hex": "766564",
+    "repr": "b'ved'"
+  },
+  {
+    "token_id": 427,
+    "hex": "746572",
+    "repr": "b'ter'"
+  },
+  {
+    "token_id": 428,
+    "hex": "2077657265",
+    "repr": "b' were'"
+  },
+  {
+    "token_id": 429,
+    "hex": "6f7265",
+    "repr": "b'ore'"
+  },
+  {
+    "token_id": 430,
+    "hex": "4f6e6365",
+    "repr": "b'Once'"
+  },
+  {
+    "token_id": 431,
+    "hex": "206c6f",
+    "repr": "b' lo'"
+  },
+  {
+    "token_id": 432,
+    "hex": "6563",
+    "repr": "b'ec'"
+  },
+  {
+    "token_id": 433,
+    "hex": "2068696d",
+    "repr": "b' him'"
+  },
+  {
+    "token_id": 434,
+    "hex": "20746f6f",
+    "repr": "b' too'"
+  },
+  {
+    "token_id": 435,
+    "hex": "20676f",
+    "repr": "b' go'"
+  },
+  {
+    "token_id": 436,
+    "hex": "20626f",
+    "repr": "b' bo'"
+  },
+  {
+    "token_id": 437,
+    "hex": "207365",
+    "repr": "b' se'"
+  },
+  {
+    "token_id": 438,
+    "hex": "69726c",
+    "repr": "b'irl'"
+  },
+  {
+    "token_id": 439,
+    "hex": "20617265",
+    "repr": "b' are'"
+  },
+  {
+    "token_id": 440,
+    "hex": "206a",
+    "repr": "b' j'"
+  },
+  {
+    "token_id": 441,
+    "hex": "2054696d",
+    "repr": "b' Tim'"
+  },
+  {
+    "token_id": 442,
+    "hex": "617264",
+    "repr": "b'ard'"
+  },
+  {
+    "token_id": 443,
+    "hex": "2077616e746564",
+    "repr": "b' wanted'"
+  },
+  {
+    "token_id": 444,
+    "hex": "696c6c",
+    "repr": "b'ill'"
+  },
+  {
+    "token_id": 445,
+    "hex": "206769726c",
+    "repr": "b' girl'"
+  },
+  {
+    "token_id": 446,
+    "hex": "2075706f6e",
+    "repr": "b' upon'"
+  },
+  {
+    "token_id": 447,
+    "hex": "207468656d",
+    "repr": "b' them'"
+  },
+  {
+    "token_id": 448,
+    "hex": "206f7574",
+    "repr": "b' out'"
+  },
+  {
+    "token_id": 449,
+    "hex": "206174",
+    "repr": "b' at'"
+  },
+  {
+    "token_id": 450,
+    "hex": "7572",
+    "repr": "b'ur'"
+  },
+  {
+    "token_id": 451,
+    "hex": "696e64",
+    "repr": "b'ind'"
+  },
+  {
+    "token_id": 452,
+    "hex": "207468656972",
+    "repr": "b' their'"
+  },
+  {
+    "token_id": 453,
+    "hex": "6675",
+    "repr": "b'fu'"
+  },
+  {
+    "token_id": 454,
+    "hex": "207370",
+    "repr": "b' sp'"
+  },
+  {
+    "token_id": 455,
+    "hex": "776179",
+    "repr": "b'way'"
+  },
+  {
+    "token_id": 456,
+    "hex": "2041",
+    "repr": "b' A'"
+  },
+  {
+    "token_id": 457,
+    "hex": "20736d696c",
+    "repr": "b' smil'"
+  },
+  {
+    "token_id": 458,
+    "hex": "20646964",
+    "repr": "b' did'"
+  },
+  {
+    "token_id": 459,
+    "hex": "20636f756c64",
+    "repr": "b' could'"
+  },
+  {
+    "token_id": 460,
+    "hex": "68656e",
+    "repr": "b'hen'"
+  },
+  {
+    "token_id": 461,
+    "hex": "2068617665",
+    "repr": "b' have'"
+  },
+  {
+    "token_id": 462,
+    "hex": "61696e",
+    "repr": "b'ain'"
+  },
+  {
+    "token_id": 463,
+    "hex": "617274",
+    "repr": "b'art'"
+  },
+  {
+    "token_id": 464,
+    "hex": "206578",
+    "repr": "b' ex'"
+  },
+  {
+    "token_id": 465,
+    "hex": "686564",
+    "repr": "b'hed'"
+  },
+  {
+    "token_id": 466,
+    "hex": "726f6d",
+    "repr": "b'rom'"
+  },
+  {
+    "token_id": 467,
+    "hex": "2077656e74",
+    "repr": "b' went'"
+  },
+  {
+    "token_id": 468,
+    "hex": "206172",
+    "repr": "b' ar'"
+  },
+  {
+    "token_id": 469,
+    "hex": "6963",
+    "repr": "b'ic'"
+  },
+  {
+    "token_id": 470,
+    "hex": "2063616e",
+    "repr": "b' can'"
+  },
+  {
+    "token_id": 471,
+    "hex": "204a",
+    "repr": "b' J'"
+  },
+  {
+    "token_id": 472,
+    "hex": "6c70",
+    "repr": "b'lp'"
+  },
+  {
+    "token_id": 473,
+    "hex": "66756c",
+    "repr": "b'ful'"
+  },
+  {
+    "token_id": 474,
+    "hex": "2042656e",
+    "repr": "b' Ben'"
+  },
+  {
+    "token_id": 475,
+    "hex": "6f6f64",
+    "repr": "b'ood'"
+  },
+  {
+    "token_id": 476,
+    "hex": "3f22",
+    "repr": "b'?\"'"
+  },
+  {
+    "token_id": 477,
+    "hex": "68696e67",
+    "repr": "b'hing'"
+  },
+  {
+    "token_id": 478,
+    "hex": "20667269656e6473",
+    "repr": "b' friends'"
+  },
+  {
+    "token_id": 479,
+    "hex": "206e616d",
+    "repr": "b' nam'"
+  },
+  {
+    "token_id": 480,
+    "hex": "69676874",
+    "repr": "b'ight'"
+  },
+  {
+    "token_id": 481,
+    "hex": "20616c6c",
+    "repr": "b' all'"
+  },
+  {
+    "token_id": 482,
+    "hex": "2068656c70",
+    "repr": "b' help'"
+  },
+  {
+    "token_id": 483,
+    "hex": "206b6e",
+    "repr": "b' kn'"
+  },
+  {
+    "token_id": 484,
+    "hex": "756d",
+    "repr": "b'um'"
+  },
+  {
+    "token_id": 485,
+    "hex": "6f6e65",
+    "repr": "b'one'"
+  },
+  {
+    "token_id": 486,
+    "hex": "61726b",
+    "repr": "b'ark'"
+  },
+  {
+    "token_id": 487,
+    "hex": "206261636b",
+    "repr": "b' back'"
+  },
+  {
+    "token_id": 488,
+    "hex": "20736179",
+    "repr": "b' say'"
+  },
+  {
+    "token_id": 489,
+    "hex": "596f75",
+    "repr": "b'You'"
+  },
+  {
+    "token_id": 490,
+    "hex": "2066756e",
+    "repr": "b' fun'"
+  },
+  {
+    "token_id": 491,
+    "hex": "20636c",
+    "repr": "b' cl'"
+  },
+  {
+    "token_id": 492,
+    "hex": "20546f6d",
+    "repr": "b' Tom'"
+  },
+  {
+    "token_id": 493,
+    "hex": "617265",
+    "repr": "b'are'"
+  },
+  {
+    "token_id": 494,
+    "hex": "206e6f",
+    "repr": "b' no'"
+  },
+  {
+    "token_id": 495,
+    "hex": "206c65",
+    "repr": "b' le'"
+  },
+  {
+    "token_id": 496,
+    "hex": "6f70",
+    "repr": "b'op'"
+  },
+  {
+    "token_id": 497,
+    "hex": "20736d696c6564",
+    "repr": "b' smiled'"
+  },
+  {
+    "token_id": 498,
+    "hex": "207363",
+    "repr": "b' sc'"
+  },
+  {
+    "token_id": 499,
+    "hex": "206e616d6564",
+    "repr": "b' named'"
+  }
+]

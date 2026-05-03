@@ -1,4 +1,9 @@
+import argparse
+import json
+import logging
+import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
 
 # To test, run
@@ -7,6 +12,14 @@ try:
     from cs336_basics.pretoken import init_token_freqmap, FrequencyMap
 except ImportError:
     from pretoken import init_token_freqmap
+
+LOGGER = logging.getLogger(__name__)
+if not LOGGER.handlers:
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+    LOGGER.addHandler(handler)
+LOGGER.setLevel(logging.INFO)
+LOGGER.propagate = False
 
 
 class Vocab:
@@ -208,21 +221,65 @@ def export_train_result(vocab: Vocab, special_tokens: list[str]) -> tuple[Extern
 
     return external_vocab, external_merges
 
+
+def _artifact_paths(input_path: str) -> tuple[Path, Path]:
+    input_file = Path(input_path)
+    return (
+        input_file.parent / f"{input_file.name}-vocab.json",
+        input_file.parent / f"{input_file.name}-merge.json",
+    )
+
+
+def _persist_train_result(
+    input_path: str,
+    vocab: ExternalVocab,
+    merges: ExternalMerges,
+) -> tuple[Path, Path]:
+    vocab_path, merge_path = _artifact_paths(input_path)
+    vocab_payload = [
+        {"token_id": token_id, "hex": token.hex(), "repr": repr(token)}
+        for token_id, token in sorted(vocab.items())
+    ]
+    merge_payload = [
+        {
+            "left_hex": left.hex(),
+            "right_hex": right.hex(),
+            "left_repr": repr(left),
+            "right_repr": repr(right),
+        }
+        for left, right in merges
+    ]
+
+    vocab_path.write_text(json.dumps(vocab_payload, indent=2) + "\n", encoding="utf-8")
+    merge_path.write_text(json.dumps(merge_payload, indent=2) + "\n", encoding="utf-8")
+    LOGGER.info("persisted vocab=%s merge=%s", vocab_path, merge_path)
+    return vocab_path, merge_path
+
 # TODO: PairInfo.records is append-only, so while the current validation protects
 # correctness better, the structure will still accumulate stale records and may get inefficient.
 def bpe_merge(
     filename: str,
     vocab_size: int | None = None,
     merge_times: int | None = None,
+    pretoken_workers: int = 4,
+    pretoken_chunks: int = 4,
+    pretoken_profile_dir: str | None = None,
     special_token: bytes = b"<|endoftext|>",
 ) -> tuple[Vocab, BytePairs]:
+    start_time = time.perf_counter()
     if merge_times is None:
         if vocab_size is None:
             merge_times = 1
         else:
             merge_times = max(0, vocab_size - 256)
 
-    freq_map = init_token_freqmap(filename, special_token=special_token)
+    freq_map = init_token_freqmap(
+        filename,
+        desired_num_chunks=pretoken_chunks,
+        num_workers=pretoken_workers,
+        profile_dir=pretoken_profile_dir,
+        special_token=special_token,
+    )
     vocab = Vocab()
     heads = []
     for word, freq in freq_map.items():
@@ -236,6 +293,24 @@ def bpe_merge(
         vocab.merges.append((largest_pair.t1, largest_pair.t2))
         token_id = vocab.add_merge(largest_pair.t1, largest_pair.t2)
         merge(token_id, largest_pair, all_pairs)
+        completed = i + 1
+        if completed % 100 == 0:
+            LOGGER.info(
+                "bpe_merge progress filename=%s merges_completed=%s/%s vocab_size=%s remaining_pairs=%s",
+                filename,
+                completed,
+                merge_times,
+                len(vocab.toword),
+                len(all_pairs),
+            )
+    LOGGER.info(
+        "bpe_merge finish filename=%s merges_completed=%s requested_merges=%s vocab_size=%s elapsed=%.2fs",
+        filename,
+        len(vocab.merges),
+        merge_times,
+        len(vocab.toword),
+        time.perf_counter() - start_time,
+    )
     return vocab, export_pairs(all_pairs, vocab)
 
 
@@ -243,6 +318,9 @@ def train_bpe(
     input_path: str,
     vocab_size: int,
     special_tokens: list[str],
+    pretoken_workers: int = 4,
+    pretoken_chunks: int = 4,
+    pretoken_profile_dir: str | None = None,
 ) -> tuple[ExternalVocab, ExternalMerges]:
     merge_vocab_size = max(256, vocab_size - len(special_tokens))
     split_special_token = (
@@ -254,14 +332,27 @@ def train_bpe(
     vocab, _ = bpe_merge(
         input_path,
         vocab_size=merge_vocab_size,
+        pretoken_workers=pretoken_workers,
+        pretoken_chunks=pretoken_chunks,
+        pretoken_profile_dir=pretoken_profile_dir,
         special_token=split_special_token,
     )
-    return export_train_result(vocab, special_tokens)
-
-import argparse
+    exported_vocab, exported_merges = export_train_result(vocab, special_tokens)
+    _persist_train_result(input_path, exported_vocab, exported_merges)
+    return exported_vocab, exported_merges
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("input_file")
+    parser.add_argument("--vocab-size", type=int, default=5)
+    parser.add_argument("--pretoken-worker", type=int, default=4)
+    parser.add_argument("--pretoken-chunk", type=int, default=4)
+    parser.add_argument("--pretoken-profile-dir")
     args = parser.parse_args()
-    bpe_merge(args.input_file)
+    vocab, merges = train_bpe(
+        input_path=args.input_file,
+        vocab_size=args.vocab_size,
+        pretoken_workers=args.pretoken_worker,
+        pretoken_chunks=args.pretoken_chunk,
+        pretoken_profile_dir=args.pretoken_profile_dir,
+        special_tokens=["<|endoftext|>"])
