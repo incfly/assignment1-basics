@@ -10,6 +10,7 @@ type ChunkBoundsList = list[ChunkBounds]
 type FrequencyMap = dict[bytes, int]
 
 data: bytes
+split_token: bytes = b"<|endoftext|>"
 
 
 def find_chunk_boundaries(
@@ -59,14 +60,16 @@ def find_chunk_boundaries(
     return sorted(set(chunk_boundaries))
 
 
-def _init_shared_string(s: bytes) -> None:
+def _init_shared_string(s: bytes, special_token: bytes) -> None:
     '''
     Init the worker with entire training data corpus. Not the best but ok.
     NOTE: Good to know, python async io only helps with io concurrency not compute.
     global mem sharing data, with compute pool (diff process). This is to work around GIL issue.
     '''
     global data
+    global split_token
     data = s
+    split_token = special_token
 
 
 def _get_file_chunk_bounds(
@@ -79,9 +82,6 @@ def _get_file_chunk_bounds(
         f.seek(0)
         data = f.read()
     return data, list(zip(boundaries[:-1], boundaries[1:]))
-
-
-endoftext_token = b'<|endoftext|>'
 
 def _pretoken_worker(bounds: ChunkBounds) -> FrequencyMap:
     '''
@@ -100,19 +100,23 @@ def _pretoken_worker(bounds: ChunkBounds) -> FrequencyMap:
     PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
     out: defaultdict[bytes, int] = defaultdict(int)
-    for doc in share.split(endoftext_token):
+    for doc in share.split(split_token):
         doc_text = doc.decode("utf-8", errors="ignore")
         for t in re.findall(PAT, doc_text):
             out[t.encode("utf-8")] += 1
     return dict(out)
 
 
-def _pretoken_with_pool(shared_data: bytes, bounds_list: ChunkBoundsList) -> FrequencyMap:
+def _pretoken_with_pool(
+    shared_data: bytes,
+    bounds_list: ChunkBoundsList,
+    special_token: bytes,
+) -> FrequencyMap:
     '''
     NOTE: map reduce fashion. worker emit frequency map, main process consolidate into merged dict.
     '''
     ctx = mp.get_context("fork")
-    with ctx.Pool(4, initializer=_init_shared_string, initargs=(shared_data,)) as p:
+    with ctx.Pool(4, initializer=_init_shared_string, initargs=(shared_data, special_token)) as p:
         results = p.map(_pretoken_worker, bounds_list)
         merged: FrequencyMap = {}
         for d in results:
@@ -131,7 +135,7 @@ def init_token_freqmap(
         desired_num_chunks=desired_num_chunks,
         special_token=special_token,
     )
-    return _pretoken_with_pool(shared_data, bounds_list)
+    return _pretoken_with_pool(shared_data, bounds_list, special_token)
 
 
 if __name__ == "__main__":

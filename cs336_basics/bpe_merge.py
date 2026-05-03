@@ -84,6 +84,10 @@ type AllPairs = dict[(int,int), PairInfo]
 type Merge = tuple[int, int]
 type BytePairs = dict[bytes, PairInfo]
 
+# Structure required by the assignement.
+type ExternalMerges = list[tuple[bytes, bytes]]
+type ExternalVocab = dict[int, bytes]
+
 # Cannot use set. set you can't modify the element itself.
 # Same in C++, value are constant.
 def init_pair_info(heads: list[Node]) -> AllPairs:
@@ -176,10 +180,49 @@ def export_pairs(all_pairs: AllPairs, vocab: Vocab) -> BytePairs:
         out[vocab.toword[left_id] + vocab.toword[right_id]] = info
     return out
 
+
+def pair_sort_key(item: tuple[tuple[int, int], PairInfo], vocab: Vocab) -> tuple[int, bytes, bytes]:
+    (left_id, right_id), info = item
+    return info.freq, vocab.toword[left_id], vocab.toword[right_id]
+
+
+def export_train_result(vocab: Vocab, special_tokens: list[str]) -> tuple[ExternalVocab, ExternalMerges]:
+    external_vocab: ExternalVocab = {}
+    external_merges: ExternalMerges = []
+
+    next_token_id = 0
+    for special_token in special_tokens:
+        external_vocab[next_token_id] = special_token.encode("utf-8")
+        next_token_id += 1
+
+    for byte in range(256):
+        external_vocab[next_token_id] = bytes([byte])
+        next_token_id += 1
+
+    for left_id, right_id in vocab.merges:
+        left = vocab.toword[left_id]
+        right = vocab.toword[right_id]
+        external_merges.append((left, right))
+        external_vocab[next_token_id] = left + right
+        next_token_id += 1
+
+    return external_vocab, external_merges
+
 # TODO: PairInfo.records is append-only, so while the current validation protects
 # correctness better, the structure will still accumulate stale records and may get inefficient.
-def bpe_merge(filename: str, merge_times=1) -> tuple[Vocab, BytePairs]:
-    freq_map = init_token_freqmap(filename)
+def bpe_merge(
+    filename: str,
+    vocab_size: int | None = None,
+    merge_times: int | None = None,
+    special_token: bytes = b"<|endoftext|>",
+) -> tuple[Vocab, BytePairs]:
+    if merge_times is None:
+        if vocab_size is None:
+            merge_times = 1
+        else:
+            merge_times = max(0, vocab_size - 256)
+
+    freq_map = init_token_freqmap(filename, special_token=special_token)
     vocab = Vocab()
     heads = []
     for word, freq in freq_map.items():
@@ -188,13 +231,37 @@ def bpe_merge(filename: str, merge_times=1) -> tuple[Vocab, BytePairs]:
     for i in range(merge_times):
         if not all_pairs:
             break
-        # TODO: ineffiency for scanning.
-        largest_pair = max(all_pairs.values(), key=lambda pair: pair.freq)
+        # Break frequency ties by preferring the lexicographically larger byte pair.
+        _, largest_pair = max(all_pairs.items(), key=lambda item: pair_sort_key(item, vocab))
         vocab.merges.append((largest_pair.t1, largest_pair.t2))
         token_id = vocab.add_merge(largest_pair.t1, largest_pair.t2)
         merge(token_id, largest_pair, all_pairs)
     return vocab, export_pairs(all_pairs, vocab)
 
 
+def train_bpe(
+    input_path: str,
+    vocab_size: int,
+    special_tokens: list[str],
+) -> tuple[ExternalVocab, ExternalMerges]:
+    merge_vocab_size = max(256, vocab_size - len(special_tokens))
+    split_special_token = (
+        special_tokens[0].encode("utf-8")
+        if special_tokens
+        else b"<|endoftext|>"
+    )
+
+    vocab, _ = bpe_merge(
+        input_path,
+        vocab_size=merge_vocab_size,
+        special_token=split_special_token,
+    )
+    return export_train_result(vocab, special_tokens)
+
+import argparse
+
 if __name__ == "__main__":
-    bpe_merge("./data/tiny-1000.txt")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file")
+    args = parser.parse_args()
+    bpe_merge(args.input_file)
