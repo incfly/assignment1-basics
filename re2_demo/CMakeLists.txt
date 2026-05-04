@@ -26,10 +26,19 @@ if(APPLE)
   target_link_options(_re2demo PRIVATE "-undefined" "dynamic_lookup")
 endif()
 
+add_executable(capture_perf capture_perf.cpp)
+target_link_libraries(capture_perf PRIVATE re2::re2)
+
 set_target_properties(
   _re2demo
   PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   PREFIX ""
   SUFFIX "${PYTHON_EXTENSION_SUFFIX}"
+)
+
+set_target_properties(
+  capture_perf
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )

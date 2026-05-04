@@ -1,7 +1,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -23,27 +22,25 @@ static re2::RE2* get_compiled_re(const std::string& pattern) {
     return compiled_ptr;
 }
 
-static bool count_matches_into_map(
+static void count_matches_into_map(
     re2::RE2* re,
-    absl::string_view text,
+    std::string_view text,
     std::unordered_map<std::string, Py_ssize_t>& counts
 ) {
-    absl::string_view submatches[2];
+    absl::string_view full_text(text.data(), text.size());
+    absl::string_view match[1];
     size_t search_start = 0;
 
-    while (search_start <= text.size() &&
-           re->Match(text, search_start, text.size(), re2::RE2::UNANCHORED, submatches, 2)) {
-        counts[std::string(submatches[1])] += 1;
-
-        size_t match_begin = static_cast<size_t>(submatches[0].data() - text.data());
-        size_t match_end = match_begin + submatches[0].size();
-        search_start = match_end;
-        if (match_end == match_begin) {
+    while (search_start <= full_text.size() &&
+           re->Match(full_text, search_start, full_text.size(), re2::RE2::UNANCHORED, match, 1)) {
+        counts[std::string(match[0].data(), match[0].size())] += 1;
+        size_t match_end = static_cast<size_t>(match[0].data() - full_text.data()) + match[0].size();
+        if (match_end <= search_start) {
             search_start += 1;
+        } else {
+            search_start = match_end;
         }
     }
-
-    return true;
 }
 
 static PyObject* findall(PyObject* self, PyObject* args) {
@@ -90,9 +87,10 @@ static PyObject* findall(PyObject* self, PyObject* args) {
 
         size_t match_begin = static_cast<size_t>(submatches[0].data() - full_text.data());
         size_t match_end = match_begin + submatches[0].size();
-        search_start = match_end;
-        if (match_end == match_begin) {
+        if (match_end <= search_start) {
             search_start += 1;
+        } else {
+            search_start = match_end;
         }
     }
 
@@ -114,8 +112,7 @@ static PyObject* token_freqmap(PyObject* self, PyObject* args) {
         return nullptr;
     }
 
-    std::string wrapped_pattern = "(" + std::string(pattern) + ")";
-    re2::RE2* re = get_compiled_re(wrapped_pattern);
+    re2::RE2* re = get_compiled_re(std::string(pattern));
     if (!re->ok()) {
         PyErr_Format(PyExc_ValueError, "invalid RE2 pattern: %s", re->error().c_str());
         return nullptr;
@@ -132,7 +129,11 @@ static PyObject* token_freqmap(PyObject* self, PyObject* args) {
             ? raw_data.substr(start)
             : raw_data.substr(start, next - start);
 
-        PyObject* decoded = PyUnicode_DecodeUTF8(raw_doc.data(), static_cast<Py_ssize_t>(raw_doc.size()), "ignore");
+        PyObject* decoded = PyUnicode_DecodeUTF8(
+            raw_doc.data(),
+            static_cast<Py_ssize_t>(raw_doc.size()),
+            "ignore"
+        );
         if (decoded == nullptr) {
             return nullptr;
         }
@@ -146,7 +147,7 @@ static PyObject* token_freqmap(PyObject* self, PyObject* args) {
 
         count_matches_into_map(
             re,
-            absl::string_view(cleaned_text, static_cast<size_t>(cleaned_len)),
+            std::string_view(cleaned_text, static_cast<size_t>(cleaned_len)),
             counts
         );
         Py_DECREF(decoded);
