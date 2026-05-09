@@ -167,6 +167,6 @@ cython_debug/
 # re2 binding
 third_party/
 .local/
-
+data/
 .vscode/
 *.prof

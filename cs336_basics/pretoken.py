@@ -149,13 +149,7 @@ def _pretoken_worker(bounds: ChunkBounds) -> FrequencyMap:
     share = data[start:end]
     pid = os.getpid()
     preview = share[:80].decode("utf-8", errors="ignore").replace("\n", "\\n")
-    LOGGER.debug(
-        "worker %s processing bytes[%s:%s] %r",
-        pid,
-        start,
-        end,
-        preview,
-    )
+    LOGGER.info("pretoken worker start pid=%s bytes=%s regex_mode=%s", pid, end - start, worker_regex_mode)
 
     profiler = cProfile.Profile() if worker_profile_dir is not None else None
     if profiler is not None:
@@ -195,16 +189,18 @@ def _pretoken_with_pool(
     ctx = mp.get_context("fork")
     if profile_dir is not None:
         Path(profile_dir).mkdir(parents=True, exist_ok=True)
+    start_time = time.perf_counter()
     with ctx.Pool(
         num_workers,
         initializer=_init_shared_string,
         initargs=(shared_data, special_token, profile_dir, regex_mode),
     ) as p:
-        results = p.map(_pretoken_worker, bounds_list)
+        results = p.imap_unordered(_pretoken_worker, bounds_list, chunksize=1)
         merged: FrequencyMap = {}
-        for d in results:
+        for completed, d in enumerate(results, start=1):
             for k, v in d.items():
                 merged[k] = merged.get(k, 0) + v
+            LOGGER.info("pretoken progress chunks=%s/%s approx_pct=%s elapsed=%.2fs", completed, len(bounds_list), round(100 * completed / len(bounds_list)), time.perf_counter() - start_time)
         return merged
 
 

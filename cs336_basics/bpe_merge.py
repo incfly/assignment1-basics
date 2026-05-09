@@ -104,10 +104,14 @@ type ExternalVocab = dict[int, bytes]
 # Cannot use set. set you can't modify the element itself.
 # Same in C++, value are constant.
 def init_pair_info(heads: list[Node]) -> AllPairs:
+    start_time = time.perf_counter()
     all_pairs : AllPairs = {}
-    for head in heads:
+    total_pairs = 0
+    total_heads = len(heads)
+    for head_index, head in enumerate(heads, start=1):
         ptr = head
         while ptr.next is not None:
+            total_pairs += 1
             t1 = ptr.token
             t2 = ptr.next.token
             pair_key = (t1, t2)
@@ -117,6 +121,22 @@ def init_pair_info(heads: list[Node]) -> AllPairs:
                 pair_info = all_pairs[pair_key]
             pair_info.record(ptr)
             ptr = ptr.next
+        if head_index % 1_000_000 == 0:
+            LOGGER.info(
+                "init_pair_info progress heads=%s/%s pair_records=%s unique_pairs=%s elapsed=%.2fs",
+                head_index,
+                total_heads,
+                total_pairs,
+                len(all_pairs),
+                time.perf_counter() - start_time,
+            )
+    LOGGER.info(
+        "init_pair_info finish heads=%s pair_records=%s unique_pairs=%s elapsed=%.2fs",
+        total_heads,
+        total_pairs,
+        len(all_pairs),
+        time.perf_counter() - start_time,
+    )
     return all_pairs
 
 
@@ -284,8 +304,28 @@ def bpe_merge(
     )
     vocab = Vocab()
     heads = []
-    for word, freq in freq_map.items():
+    build_heads_start = time.perf_counter()
+    total_heads = len(freq_map)
+    total_word_bytes = 0
+    LOGGER.info("bpe_merge build_heads start unique_tokens=%s", total_heads)
+    for head_index, (word, freq) in enumerate(freq_map.items(), start=1):
         heads.append(init_word_nodes_list(word, freq))
+        total_word_bytes += len(word)
+        if head_index % 1_000_000 == 0:
+            LOGGER.info(
+                "bpe_merge build_heads progress heads=%s/%s total_word_bytes=%s elapsed=%.2fs",
+                head_index,
+                total_heads,
+                total_word_bytes,
+                time.perf_counter() - build_heads_start,
+            )
+    LOGGER.info(
+        "bpe_merge build_heads finish heads=%s total_word_bytes=%s elapsed=%.2fs",
+        total_heads,
+        total_word_bytes,
+        time.perf_counter() - build_heads_start,
+    )
+    LOGGER.info("bpe_merge init_pair_info start heads=%s", len(heads))
     all_pairs = init_pair_info(heads)
     for i in range(merge_times):
         if not all_pairs:

@@ -22,24 +22,195 @@ static re2::RE2* get_compiled_re(const std::string& pattern) {
     return compiled_ptr;
 }
 
-static void count_matches_into_map(
-    re2::RE2* re,
-    std::string_view text,
-    std::unordered_map<std::string, Py_ssize_t>& counts
-) {
-    absl::string_view full_text(text.data(), text.size());
-    absl::string_view match[1];
-    size_t search_start = 0;
+struct DecodedCodepoint {
+    Py_UCS4 value;
+    std::size_t byte_length;
+};
 
-    while (search_start <= full_text.size() &&
-           re->Match(full_text, search_start, full_text.size(), re2::RE2::UNANCHORED, match, 1)) {
-        counts[std::string(match[0].data(), match[0].size())] += 1;
-        size_t match_end = static_cast<size_t>(match[0].data() - full_text.data()) + match[0].size();
-        if (match_end <= search_start) {
-            search_start += 1;
-        } else {
-            search_start = match_end;
+static DecodedCodepoint decode_utf8(std::string_view text, std::size_t pos) {
+    const unsigned char lead = static_cast<unsigned char>(text[pos]);
+    if ((lead & 0x80) == 0) {
+        return {lead, 1};
+    }
+    if ((lead & 0xE0) == 0xC0) {
+        return {
+            static_cast<Py_UCS4>(((lead & 0x1F) << 6) |
+            (static_cast<unsigned char>(text[pos + 1]) & 0x3F)),
+            2
+        };
+    }
+    if ((lead & 0xF0) == 0xE0) {
+        return {
+            static_cast<Py_UCS4>(((lead & 0x0F) << 12) |
+            ((static_cast<unsigned char>(text[pos + 1]) & 0x3F) << 6) |
+            (static_cast<unsigned char>(text[pos + 2]) & 0x3F)),
+            3
+        };
+    }
+    return {
+        static_cast<Py_UCS4>(((lead & 0x07) << 18) |
+        ((static_cast<unsigned char>(text[pos + 1]) & 0x3F) << 12) |
+        ((static_cast<unsigned char>(text[pos + 2]) & 0x3F) << 6) |
+        (static_cast<unsigned char>(text[pos + 3]) & 0x3F)),
+        4
+    };
+}
+
+static bool starts_with_contraction(std::string_view text, std::size_t pos, std::size_t* length) {
+    if (text[pos] != '\'') {
+        return false;
+    }
+    const std::string_view tail = text.substr(pos);
+    if (tail.substr(0, 3) == "'ll" || tail.substr(0, 3) == "'ve" || tail.substr(0, 3) == "'re") {
+        *length = 3;
+        return true;
+    }
+    if (tail.size() >= 2) {
+        const char suffix = tail[1];
+        if (suffix == 's' || suffix == 'd' || suffix == 'm' || suffix == 't') {
+            *length = 2;
+            return true;
         }
+    }
+    return false;
+}
+
+static bool is_whitespace(Py_UCS4 value) {
+    return Py_UNICODE_ISSPACE(value);
+}
+
+static bool is_letter(Py_UCS4 value) {
+    return Py_UNICODE_ISALPHA(value);
+}
+
+static bool is_number(Py_UCS4 value) {
+    return Py_UNICODE_ISNUMERIC(value);
+}
+
+static void add_token(
+    std::unordered_map<std::string, Py_ssize_t>& counts,
+    std::string_view text,
+    std::size_t start,
+    std::size_t end
+) {
+    counts[std::string(text.substr(start, end - start))] += 1;
+}
+
+static void tokenize_doc_into_map(std::string_view text, std::unordered_map<std::string, Py_ssize_t>& counts) {
+    std::size_t pos = 0;
+    while (pos < text.size()) {
+        std::size_t contraction_length = 0;
+        if (starts_with_contraction(text, pos, &contraction_length)) {
+            add_token(counts, text, pos, pos + contraction_length);
+            pos += contraction_length;
+            continue;
+        }
+
+        const DecodedCodepoint current = decode_utf8(text, pos);
+        const std::size_t next_pos = pos + current.byte_length;
+
+        if (current.value == ' ' && next_pos < text.size()) {
+            const DecodedCodepoint next = decode_utf8(text, next_pos);
+            if (is_letter(next.value)) {
+                std::size_t end = next_pos + next.byte_length;
+                while (end < text.size()) {
+                    const DecodedCodepoint cp = decode_utf8(text, end);
+                    if (!is_letter(cp.value)) {
+                        break;
+                    }
+                    end += cp.byte_length;
+                }
+                add_token(counts, text, pos, end);
+                pos = end;
+                continue;
+            }
+            if (is_number(next.value)) {
+                std::size_t end = next_pos + next.byte_length;
+                while (end < text.size()) {
+                    const DecodedCodepoint cp = decode_utf8(text, end);
+                    if (!is_number(cp.value)) {
+                        break;
+                    }
+                    end += cp.byte_length;
+                }
+                add_token(counts, text, pos, end);
+                pos = end;
+                continue;
+            }
+            if (!is_whitespace(next.value) && !is_letter(next.value) && !is_number(next.value)) {
+                std::size_t end = next_pos + next.byte_length;
+                while (end < text.size()) {
+                    const DecodedCodepoint cp = decode_utf8(text, end);
+                    if (is_whitespace(cp.value) || is_letter(cp.value) || is_number(cp.value)) {
+                        break;
+                    }
+                    end += cp.byte_length;
+                }
+                add_token(counts, text, pos, end);
+                pos = end;
+                continue;
+            }
+        }
+
+        if (is_letter(current.value)) {
+            std::size_t end = next_pos;
+            while (end < text.size()) {
+                const DecodedCodepoint cp = decode_utf8(text, end);
+                if (!is_letter(cp.value)) {
+                    break;
+                }
+                end += cp.byte_length;
+            }
+            add_token(counts, text, pos, end);
+            pos = end;
+            continue;
+        }
+
+        if (is_number(current.value)) {
+            std::size_t end = next_pos;
+            while (end < text.size()) {
+                const DecodedCodepoint cp = decode_utf8(text, end);
+                if (!is_number(cp.value)) {
+                    break;
+                }
+                end += cp.byte_length;
+            }
+            add_token(counts, text, pos, end);
+            pos = end;
+            continue;
+        }
+
+        if (is_whitespace(current.value)) {
+            std::size_t end = next_pos;
+            std::size_t last_start = pos;
+            while (end < text.size()) {
+                const DecodedCodepoint cp = decode_utf8(text, end);
+                if (!is_whitespace(cp.value)) {
+                    break;
+                }
+                last_start = end;
+                end += cp.byte_length;
+            }
+            if (end == text.size() || last_start == pos) {
+                add_token(counts, text, pos, end);
+                pos = end;
+            } else {
+                add_token(counts, text, pos, last_start);
+                pos = last_start;
+            }
+            continue;
+        }
+
+        std::size_t end = next_pos;
+        while (end < text.size()) {
+            const DecodedCodepoint cp = decode_utf8(text, end);
+            if (is_whitespace(cp.value) || is_letter(cp.value) || is_number(cp.value)) {
+                break;
+            }
+            end += cp.byte_length;
+        }
+        add_token(counts, text, pos, end);
+        pos = end;
     }
 }
 
@@ -112,11 +283,7 @@ static PyObject* token_freqmap(PyObject* self, PyObject* args) {
         return nullptr;
     }
 
-    re2::RE2* re = get_compiled_re(std::string(pattern));
-    if (!re->ok()) {
-        PyErr_Format(PyExc_ValueError, "invalid RE2 pattern: %s", re->error().c_str());
-        return nullptr;
-    }
+    (void)pattern;
 
     std::unordered_map<std::string, Py_ssize_t> counts;
     std::string_view raw_data(data, static_cast<size_t>(data_len));
@@ -145,11 +312,7 @@ static PyObject* token_freqmap(PyObject* self, PyObject* args) {
             return nullptr;
         }
 
-        count_matches_into_map(
-            re,
-            std::string_view(cleaned_text, static_cast<size_t>(cleaned_len)),
-            counts
-        );
+        tokenize_doc_into_map(std::string_view(cleaned_text, static_cast<size_t>(cleaned_len)), counts);
         Py_DECREF(decoded);
 
         if (next == std::string_view::npos) {
