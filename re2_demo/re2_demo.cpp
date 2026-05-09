@@ -88,21 +88,18 @@ static bool is_number(Py_UCS4 value) {
     return Py_UNICODE_ISNUMERIC(value);
 }
 
-static void add_token(
-    std::unordered_map<std::string, Py_ssize_t>& counts,
-    std::string_view text,
-    std::size_t start,
-    std::size_t end
-) {
-    counts[std::string(text.substr(start, end - start))] += 1;
-}
-
-static void tokenize_doc_into_map(std::string_view text, std::unordered_map<std::string, Py_ssize_t>& counts) {
+// RE2 cannot express GPT-2's whitespace rule `\s+(?!\S)` because it has no
+// lookahead. Training only needs counts, but encoding needs ordered pre-tokens,
+// so both call this manual tokenizer with different emit callbacks.
+template <typename Emit>
+static bool tokenize_doc(std::string_view text, Emit emit) {
     std::size_t pos = 0;
     while (pos < text.size()) {
         std::size_t contraction_length = 0;
         if (starts_with_contraction(text, pos, &contraction_length)) {
-            add_token(counts, text, pos, pos + contraction_length);
+            if (!emit(text, pos, pos + contraction_length)) {
+                return false;
+            }
             pos += contraction_length;
             continue;
         }
@@ -121,7 +118,9 @@ static void tokenize_doc_into_map(std::string_view text, std::unordered_map<std:
                     }
                     end += cp.byte_length;
                 }
-                add_token(counts, text, pos, end);
+                if (!emit(text, pos, end)) {
+                    return false;
+                }
                 pos = end;
                 continue;
             }
@@ -134,7 +133,9 @@ static void tokenize_doc_into_map(std::string_view text, std::unordered_map<std:
                     }
                     end += cp.byte_length;
                 }
-                add_token(counts, text, pos, end);
+                if (!emit(text, pos, end)) {
+                    return false;
+                }
                 pos = end;
                 continue;
             }
@@ -147,7 +148,9 @@ static void tokenize_doc_into_map(std::string_view text, std::unordered_map<std:
                     }
                     end += cp.byte_length;
                 }
-                add_token(counts, text, pos, end);
+                if (!emit(text, pos, end)) {
+                    return false;
+                }
                 pos = end;
                 continue;
             }
@@ -162,7 +165,9 @@ static void tokenize_doc_into_map(std::string_view text, std::unordered_map<std:
                 }
                 end += cp.byte_length;
             }
-            add_token(counts, text, pos, end);
+            if (!emit(text, pos, end)) {
+                return false;
+            }
             pos = end;
             continue;
         }
@@ -176,7 +181,9 @@ static void tokenize_doc_into_map(std::string_view text, std::unordered_map<std:
                 }
                 end += cp.byte_length;
             }
-            add_token(counts, text, pos, end);
+            if (!emit(text, pos, end)) {
+                return false;
+            }
             pos = end;
             continue;
         }
@@ -193,10 +200,14 @@ static void tokenize_doc_into_map(std::string_view text, std::unordered_map<std:
                 end += cp.byte_length;
             }
             if (end == text.size() || last_start == pos) {
-                add_token(counts, text, pos, end);
+                if (!emit(text, pos, end)) {
+                    return false;
+                }
                 pos = end;
             } else {
-                add_token(counts, text, pos, last_start);
+                if (!emit(text, pos, last_start)) {
+                    return false;
+                }
                 pos = last_start;
             }
             continue;
@@ -210,9 +221,19 @@ static void tokenize_doc_into_map(std::string_view text, std::unordered_map<std:
             }
             end += cp.byte_length;
         }
-        add_token(counts, text, pos, end);
+        if (!emit(text, pos, end)) {
+            return false;
+        }
         pos = end;
     }
+    return true;
+}
+
+static bool tokenize_doc_into_map(std::string_view text, std::unordered_map<std::string, Py_ssize_t>& counts) {
+    return tokenize_doc(text, [&counts](std::string_view source, std::size_t start, std::size_t end) {
+        counts[std::string(source.substr(start, end - start))] += 1;
+        return true;
+    });
 }
 
 static PyObject* findall(PyObject* self, PyObject* args) {
@@ -313,7 +334,10 @@ static PyObject* token_freqmap(PyObject* self, PyObject* args) {
             return nullptr;
         }
 
-        tokenize_doc_into_map(std::string_view(cleaned_text, static_cast<size_t>(cleaned_len)), counts);
+        if (!tokenize_doc_into_map(std::string_view(cleaned_text, static_cast<size_t>(cleaned_len)), counts)) {
+            Py_DECREF(decoded);
+            return nullptr;
+        }
         Py_DECREF(decoded);
 
         if (next == std::string_view::npos) {
@@ -352,8 +376,47 @@ static PyObject* token_freqmap(PyObject* self, PyObject* args) {
     return out;
 }
 
+static PyObject* pretokenize(PyObject* self, PyObject* args) {
+    const char* text = nullptr;
+    Py_ssize_t text_len = 0;
+
+    if (!PyArg_ParseTuple(args, "s#", &text, &text_len)) {
+        return nullptr;
+    }
+
+    PyObject* out = PyList_New(0);
+    if (out == nullptr) {
+        return nullptr;
+    }
+
+    bool ok = tokenize_doc(
+        std::string_view(text, static_cast<std::size_t>(text_len)),
+        [out](std::string_view source, std::size_t start, std::size_t end) {
+            PyObject* token = PyUnicode_FromStringAndSize(
+                source.data() + start,
+                static_cast<Py_ssize_t>(end - start)
+            );
+            if (token == nullptr) {
+                return false;
+            }
+            if (PyList_Append(out, token) < 0) {
+                Py_DECREF(token);
+                return false;
+            }
+            Py_DECREF(token);
+            return true;
+        }
+    );
+    if (!ok) {
+        Py_DECREF(out);
+        return nullptr;
+    }
+    return out;
+}
+
 static PyMethodDef re2_demo_methods[] = {
     {"findall", findall, METH_VARARGS, "Return all non-overlapping full matches using RE2."},
+    {"pretokenize", pretokenize, METH_VARARGS, "Return ordered GPT-style pre-tokens."},
     {"token_freqmap", token_freqmap, METH_VARARGS, "Return a token frequency map for a whole chunk using RE2."},
     {nullptr, nullptr, 0, nullptr},
 };

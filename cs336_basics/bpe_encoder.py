@@ -4,7 +4,7 @@ import regex as re
 from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING
 
-from cs336_basics.pretoken import CPP_PRETOKEN_PATTERN, PY_PRETOKEN_PATTERN, RegexMode
+from cs336_basics.pretoken import PY_PRETOKEN_PATTERN, RegexMode
 
 if TYPE_CHECKING:
     from cs336_basics.bpe_merge import ExternalMerges, ExternalVocab
@@ -58,16 +58,16 @@ class Encoder:
             else None
         )
         self.pretoken_pattern = re.compile(PY_PRETOKEN_PATTERN) if regex_mode == "py" else None
-        self.cpp_findall = None
+        self.cpp_pretokenize = None
         if regex_mode == "cpp":
             try:
-                from re2_demo import findall as re2_findall
+                from re2_demo import pretokenize as re2_pretokenize
             except ImportError as exc:
                 raise RuntimeError(
                     "regex_mode='cpp' requires building re2_demo first via "
                     "`./scripts/bootstrap_re2_linux.sh` and `PYTHON_BIN=python3 ./scripts/build_re2_demo_linux.sh`."
                 ) from exc
-            self.cpp_findall = re2_findall
+            self.cpp_pretokenize = re2_pretokenize
         elif regex_mode != "py":
             raise ValueError(f"unsupported regex_mode={regex_mode!r}")
 
@@ -120,8 +120,8 @@ class Encoder:
     def _encode_text_without_special(self, text: str) -> list[int]:
         ids: list[int] = []
         if self.regex_mode == "cpp":
-            assert self.cpp_findall is not None
-            pretokens = self.cpp_findall(CPP_PRETOKEN_PATTERN, text)
+            assert self.cpp_pretokenize is not None
+            pretokens = self.cpp_pretokenize(text)
         else:
             assert self.pretoken_pattern is not None
             pretokens = self.pretoken_pattern.findall(text)
