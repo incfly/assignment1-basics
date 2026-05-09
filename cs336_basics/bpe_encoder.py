@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import regex as re
+from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING
 
 from cs336_basics.pretoken import CPP_PRETOKEN_PATTERN, PY_PRETOKEN_PATTERN, RegexMode
@@ -28,12 +29,34 @@ def _load_merges(merges_filepath: str) -> list[tuple[bytes, bytes]]:
 
 
 class Encoder:
-    def __init__(self, vocab: "ExternalVocab", merge: "ExternalMerges", regex_mode: RegexMode = "cpp"):
+    def __init__(
+        self,
+        vocab: "ExternalVocab",
+        merge: "ExternalMerges",
+        special_tokens: list[str] | None = None,
+        regex_mode: RegexMode = "cpp",
+    ):
         self.vocab = vocab
         self.merge = merge
         self.regex_mode = regex_mode
+        self.special_tokens = special_tokens or []
+        existing_tokens = set(vocab.values())
+        for special_token in self.special_tokens:
+            token_bytes = special_token.encode("utf-8")
+            if token_bytes not in existing_tokens:
+                vocab[len(vocab)] = token_bytes
+                existing_tokens.add(token_bytes)
         self.token_to_id = {token: token_id for token_id, token in vocab.items()}
+        self.special_token_to_id = {
+            special_token: self.token_to_id[special_token.encode("utf-8")]
+            for special_token in self.special_tokens
+        }
         self.merge_rank = {pair: rank for rank, pair in enumerate(merge)}
+        self.special_pattern = (
+            re.compile("|".join(re.escape(token) for token in sorted(self.special_tokens, key=len, reverse=True)))
+            if self.special_tokens
+            else None
+        )
         self.pretoken_pattern = re.compile(PY_PRETOKEN_PATTERN) if regex_mode == "py" else None
         self.cpp_findall = None
         if regex_mode == "cpp":
@@ -56,14 +79,7 @@ class Encoder:
         special_tokens: list[str] | None = None,
     ) -> "Encoder":
         vocab = _load_vocab(vocab_filepath)
-        if special_tokens is not None:
-            token_to_id = {token: token_id for token_id, token in vocab.items()}
-            for special_token in special_tokens:
-                token_bytes = special_token.encode("utf-8")
-                if token_bytes not in token_to_id:
-                    vocab[len(vocab)] = token_bytes
-                    token_to_id[token_bytes] = len(vocab) - 1
-        return cls(vocab, _load_merges(merges_filepath))
+        return cls(vocab, _load_merges(merges_filepath), special_tokens=special_tokens)
 
     # List of the merge is a long list. 
     # Token itself is short.
@@ -101,7 +117,7 @@ class Encoder:
 
         return [self.token_to_id[token] for token in parts]
 
-    def encode(self, text: str) -> list[int]:
+    def _encode_text_without_special(self, text: str) -> list[int]:
         ids: list[int] = []
         if self.regex_mode == "cpp":
             assert self.cpp_findall is not None
@@ -112,3 +128,23 @@ class Encoder:
         for pretoken in pretokens:
             ids.extend(self.encode_pretoken_bytes(pretoken.encode("utf-8")))
         return ids
+
+    def encode(self, text: str) -> list[int]:
+        if self.special_pattern is None:
+            return self._encode_text_without_special(text)
+
+        ids: list[int] = []
+        pos = 0
+        for match in self.special_pattern.finditer(text):
+            ids.extend(self._encode_text_without_special(text[pos:match.start()]))
+            ids.append(self.special_token_to_id[match.group(0)])
+            pos = match.end()
+        ids.extend(self._encode_text_without_special(text[pos:]))
+        return ids
+
+    def encode_iterable(self, iterable: Iterable[str]) -> Iterator[int]:
+        for text in iterable:
+            yield from self.encode(text)
+
+    def decode(self, ids: list[int]) -> str:
+        return b"".join(self.vocab[token_id] for token_id in ids).decode("utf-8", errors="replace")
