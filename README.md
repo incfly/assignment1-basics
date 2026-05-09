@@ -31,20 +31,13 @@ To connect your implementation to the tests, complete the
 functions in [./tests/adapters.py](./tests/adapters.py).
 
 ### Download data
-Download the TinyStories data and a subsample of OpenWebText
+Keep large datasets in a sibling directory so they do not get packaged with the repo.
+Small test fixtures stay in `./data/test`, but the runtime corpora should live in
+`../cs336-data`.
 
 ``` sh
-mkdir -p data
-cd data
-
-wget https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStoriesV2-GPT4-train.txt
-wget https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStoriesV2-GPT4-valid.txt
-
-wget https://huggingface.co/datasets/stanford-cs336/owt-sample/resolve/main/owt_train.txt.gz
-gunzip owt_train.txt.gz
-wget https://huggingface.co/datasets/stanford-cs336/owt-sample/resolve/main/owt_valid.txt.gz
-gunzip owt_valid.txt.gz
-
-cd ..
+bash ./scripts/init_data.sh
 ```
 
+This downloads the Stanford CS336 OpenWebText sample as `owt_train.txt` and
+`owt_valid.txt` in `../cs336-data`.

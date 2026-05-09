@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DATA_ROOT="${DATA_ROOT:-$SCRIPT_DIR/../cs336-data}"
+
 # On macOS, use util-linux setsid so we can sample the whole process group.
 SETSID_BIN="$(brew --prefix util-linux)/bin/setsid"
 PID_FILE="$(mktemp /tmp/bpe-session.XXXXXX.pid)"
 OUTPUT_CSV="${OUTPUT_CSV:-usage.csv}"
 SAMPLE_INTERVAL="${SAMPLE_INTERVAL:-0.5}"
-INPUT_FILE="${INPUT_FILE:-data/TinyStories-train.txt}"
+INPUT_FILE="${INPUT_FILE:-$DATA_ROOT/TinyStories-train.txt}"
 VOCAB_SIZE="${VOCAB_SIZE:-500}"
 PRETOKEN_WORKER="${PRETOKEN_WORKER:-8}"
 PRETOKEN_CHUNK="${PRETOKEN_CHUNK:-8}"
@@ -19,9 +22,10 @@ trap cleanup EXIT
 
 "$SETSID_BIN" sh -c '
   echo $$ > "$1"
+  cd "$6"
   exec uv run python cs336_basics/bpe_merge.py "$2" \
     --vocab-size "$3" --pretoken-worker "$4" --pretoken-chunk "$5"
-' sh "$PID_FILE" "$INPUT_FILE" "$VOCAB_SIZE" "$PRETOKEN_WORKER" "$PRETOKEN_CHUNK" \
+' sh "$PID_FILE" "$INPUT_FILE" "$VOCAB_SIZE" "$PRETOKEN_WORKER" "$PRETOKEN_CHUNK" "$SCRIPT_DIR" \
   >"$RUN_LOG" 2>&1 &
 LAUNCHER_PID=$!
 

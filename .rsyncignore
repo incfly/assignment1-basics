@@ -1,0 +1,15 @@
+.git/
+.venv/
+notes/.venv/
+.local/
+data/
+build/
+re2_demo/build/
+.pytest_cache/
+.DS_Store
+*.prof
+*.tar.gz
+__pycache__/
+*.pyc
+notes/.ipynb_checkpoints/
+
