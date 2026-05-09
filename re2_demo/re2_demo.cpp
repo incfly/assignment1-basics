@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "re2/re2.h"
+#include "re2/stringpiece.h"
 
 static std::unordered_map<std::string, std::unique_ptr<re2::RE2>> g_re_cache;
 
@@ -235,8 +236,8 @@ static PyObject* findall(PyObject* self, PyObject* args) {
     }
 
     std::string text_string(text);
-    absl::string_view full_text(text_string);
-    absl::string_view submatches[2];
+    re2::StringPiece full_text(text_string);
+    re2::StringPiece submatches[2];
     size_t search_start = 0;
 
     while (search_start <= full_text.size() &&

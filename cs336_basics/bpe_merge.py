@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -9,8 +10,10 @@ from typing import Optional
 # To test, run
 # uv run pytest /Users/incfly/workspace/github.com/incfly/assignment1-basics/tests/test_bpe_merge.py -q
 try:
+    from cs336_basics.pair_heap import PairHeap, PairKey
     from cs336_basics.pretoken import init_token_freqmap, FrequencyMap
 except ImportError:
+    from pair_heap import PairHeap, PairKey
     from pretoken import init_token_freqmap
 
 LOGGER = logging.getLogger(__name__)
@@ -20,6 +23,14 @@ if not LOGGER.handlers:
     LOGGER.addHandler(handler)
 LOGGER.setLevel(logging.INFO)
 LOGGER.propagate = False
+
+
+def _default_pretoken_workers() -> int:
+    return max(1, os.cpu_count() or 1)
+
+
+def _default_pretoken_chunks(pretoken_workers: int) -> int:
+    return max(1, 4 * pretoken_workers)
 
 
 class Vocab:
@@ -140,38 +151,50 @@ def init_pair_info(heads: list[Node]) -> AllPairs:
     return all_pairs
 
 
-def decrement_pair(all_pairs: AllPairs, left: Node, right: Node):
+def decrement_pair(all_pairs: AllPairs, left: Node, right: Node) -> PairKey | None:
     pair_key = (left.token, right.token)
     pair_info = all_pairs.get(pair_key)
     if pair_info is None:
-        return
+        return None
     pair_info.freq -= left.freq
     if pair_info.freq <= 0:
         del all_pairs[pair_key]
+    return pair_key
 
 
-def increment_pair(all_pairs: AllPairs, left: Node, right: Node):
+def increment_pair(all_pairs: AllPairs, left: Node, right: Node) -> PairKey:
     pair_key = (left.token, right.token)
     pair_info = all_pairs.get(pair_key)
     if pair_info is None:
         pair_info = PairInfo(left.token, right.token)
         all_pairs[pair_key] = pair_info
     pair_info.record(left)
+    return pair_key
 
 
-def decrement_neighbor_pairs(all_pairs: AllPairs, left: Optional[Node], t1: Node, t2: Node, right: Optional[Node]):
+def decrement_neighbor_pairs(all_pairs: AllPairs, left: Optional[Node], t1: Node, t2: Node, right: Optional[Node]) -> set[PairKey]:
+    changed = set()
     if left is not None and left.alive:
-        decrement_pair(all_pairs, left, t1)
-    decrement_pair(all_pairs, t1, t2)
+        changed_key = decrement_pair(all_pairs, left, t1)
+        if changed_key is not None:
+            changed.add(changed_key)
+    changed_key = decrement_pair(all_pairs, t1, t2)
+    if changed_key is not None:
+        changed.add(changed_key)
     if right is not None and right.alive:
-        decrement_pair(all_pairs, t2, right)
+        changed_key = decrement_pair(all_pairs, t2, right)
+        if changed_key is not None:
+            changed.add(changed_key)
+    return changed
 
 
-def increment_neighbor_pairs(all_pairs: AllPairs, left: Optional[Node], merged: Node, right: Optional[Node]):
+def increment_neighbor_pairs(all_pairs: AllPairs, left: Optional[Node], merged: Node, right: Optional[Node]) -> set[PairKey]:
+    changed = set()
     if left is not None and left.alive:
-        increment_pair(all_pairs, left, merged)
+        changed.add(increment_pair(all_pairs, left, merged))
     if right is not None and right.alive:
-        increment_pair(all_pairs, merged, right)
+        changed.add(increment_pair(all_pairs, merged, right))
+    return changed
 
 
 def merge_two_nodes(token_id: int, t1: Node, t2: Node) -> Node:
@@ -187,8 +210,9 @@ def merge_two_nodes(token_id: int, t1: Node, t2: Node) -> Node:
     return t1
 
 
-def merge(token_id: int, pair: PairInfo, all_pairs: AllPairs):
+def merge(token_id: int, pair: PairInfo, all_pairs: AllPairs) -> set[PairKey]:
     # a, b, c, d => a, bc, d
+    changed = set()
     for t1 in pair.records:
         if not t1.alive:
             continue
@@ -202,9 +226,10 @@ def merge(token_id: int, pair: PairInfo, all_pairs: AllPairs):
         left = t1.prev
         right = t2.next
 
-        decrement_neighbor_pairs(all_pairs, left, t1, t2, right)
+        changed.update(decrement_neighbor_pairs(all_pairs, left, t1, t2, right))
         merged = merge_two_nodes(token_id, t1, t2)
-        increment_neighbor_pairs(all_pairs, left, merged, right)
+        changed.update(increment_neighbor_pairs(all_pairs, left, merged, right))
+    return changed
 
 
 def export_pairs(all_pairs: AllPairs, vocab: Vocab) -> BytePairs:
@@ -281,18 +306,35 @@ def bpe_merge(
     filename: str,
     vocab_size: int | None = None,
     merge_times: int | None = None,
-    pretoken_workers: int = 4,
-    pretoken_chunks: int = 4,
+    pretoken_workers: int | None = None,
+    pretoken_chunks: int | None = None,
     pretoken_profile_dir: str | None = None,
-    regex_mode: str = "py",
+    regex_mode: str = "cpp",
     special_token: bytes = b"<|endoftext|>",
 ) -> tuple[Vocab, BytePairs]:
     start_time = time.perf_counter()
+    if pretoken_workers is None:
+        pretoken_workers = _default_pretoken_workers()
+    if pretoken_chunks is None:
+        pretoken_chunks = _default_pretoken_chunks(pretoken_workers)
+
     if merge_times is None:
         if vocab_size is None:
             merge_times = 1
         else:
             merge_times = max(0, vocab_size - 256)
+
+    LOGGER.info(
+        "bpe_merge start filename=%s vocab_size=%s merge_times=%s pretoken_workers=%s pretoken_chunks=%s regex_mode=%s pretoken_profile_dir=%s special_token=%r",
+        filename,
+        vocab_size,
+        merge_times,
+        pretoken_workers,
+        pretoken_chunks,
+        regex_mode,
+        pretoken_profile_dir,
+        special_token,
+    )
 
     freq_map = init_token_freqmap(
         filename,
@@ -327,14 +369,25 @@ def bpe_merge(
     )
     LOGGER.info("bpe_merge init_pair_info start heads=%s", len(heads))
     all_pairs = init_pair_info(heads)
+    pair_heap = PairHeap(all_pairs, vocab.toword)
     for i in range(merge_times):
         if not all_pairs:
             break
         # Break frequency ties by preferring the lexicographically larger byte pair.
-        _, largest_pair = max(all_pairs.items(), key=lambda item: pair_sort_key(item, vocab))
+        find_max_start = time.perf_counter()
+        largest_pair = pair_heap.pop_best()
+        if largest_pair is None:
+            break
+        LOGGER.info(
+            "bpe_merge find_max finish iteration=%s/%s unique_pairs=%s elapsed=%.4fs",
+            i + 1,
+            merge_times,
+            len(all_pairs),
+            time.perf_counter() - find_max_start,
+        )
         vocab.merges.append((largest_pair.t1, largest_pair.t2))
         token_id = vocab.add_merge(largest_pair.t1, largest_pair.t2)
-        merge(token_id, largest_pair, all_pairs)
+        pair_heap.push_many(merge(token_id, largest_pair, all_pairs))
         completed = i + 1
         if completed % 100 == 0:
             LOGGER.info(
@@ -360,11 +413,16 @@ def train_bpe(
     input_path: str,
     vocab_size: int,
     special_tokens: list[str],
-    pretoken_workers: int = 4,
-    pretoken_chunks: int = 4,
+    pretoken_workers: int | None = None,
+    pretoken_chunks: int | None = None,
     pretoken_profile_dir: str | None = None,
-    regex_mode: str = "py",
+    regex_mode: str = "cpp",
 ) -> tuple[ExternalVocab, ExternalMerges]:
+    if pretoken_workers is None:
+        pretoken_workers = _default_pretoken_workers()
+    if pretoken_chunks is None:
+        pretoken_chunks = _default_pretoken_chunks(pretoken_workers)
+
     merge_vocab_size = max(256, vocab_size - len(special_tokens))
     split_special_token = (
         special_tokens[0].encode("utf-8")
@@ -389,16 +447,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("input_file")
     parser.add_argument("--vocab-size", type=int, default=5)
-    parser.add_argument("--pretoken-worker", type=int, default=4)
-    parser.add_argument("--pretoken-chunk", type=int, default=4)
+    parser.add_argument("--pretoken-worker", type=int, default=_default_pretoken_workers())
     parser.add_argument("--pretoken-profile-dir")
-    parser.add_argument("--regex-mode", choices=["py", "cpp"], default="py")
+    parser.add_argument("--regex-mode", choices=["py", "cpp"], default="cpp")
     args = parser.parse_args()
     vocab, merges = train_bpe(
         input_path=args.input_file,
         vocab_size=args.vocab_size,
         pretoken_workers=args.pretoken_worker,
-        pretoken_chunks=args.pretoken_chunk,
         pretoken_profile_dir=args.pretoken_profile_dir,
         regex_mode=args.regex_mode,
         special_tokens=["<|endoftext|>"])

@@ -12,7 +12,6 @@ SAMPLE_INTERVAL="${SAMPLE_INTERVAL:-0.5}"
 INPUT_FILE="${INPUT_FILE:-$DATA_ROOT/TinyStories-train.txt}"
 VOCAB_SIZE="${VOCAB_SIZE:-500}"
 PRETOKEN_WORKER="${PRETOKEN_WORKER:-8}"
-PRETOKEN_CHUNK="${PRETOKEN_CHUNK:-8}"
 RUN_LOG="${RUN_LOG:-/tmp/bpe-perf-run.log}"
 
 cleanup() {
@@ -22,10 +21,10 @@ trap cleanup EXIT
 
 "$SETSID_BIN" sh -c '
   echo $$ > "$1"
-  cd "$6"
+  cd "$5"
   exec uv run python cs336_basics/bpe_merge.py "$2" \
-    --vocab-size "$3" --pretoken-worker "$4" --pretoken-chunk "$5"
-' sh "$PID_FILE" "$INPUT_FILE" "$VOCAB_SIZE" "$PRETOKEN_WORKER" "$PRETOKEN_CHUNK" "$SCRIPT_DIR" \
+    --vocab-size "$3" --pretoken-worker "$4"
+' sh "$PID_FILE" "$INPUT_FILE" "$VOCAB_SIZE" "$PRETOKEN_WORKER" "$SCRIPT_DIR" \
   >"$RUN_LOG" 2>&1 &
 LAUNCHER_PID=$!
 

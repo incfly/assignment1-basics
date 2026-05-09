@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "re2/re2.h"
+#include "re2/stringpiece.h"
 
 namespace {
 
@@ -49,14 +50,14 @@ Result run_scan(re2::RE2* re, std::string_view corpus, bool capture_group) {
             ? corpus.substr(doc_start)
             : corpus.substr(doc_start, doc_end - doc_start);
 
-        absl::string_view full_text(doc.data(), doc.size());
-        absl::string_view submatches[2];
+        re2::StringPiece full_text(doc.data(), doc.size());
+        re2::StringPiece submatches[2];
         const int nsubmatch = capture_group ? 2 : 1;
         std::size_t search_start = 0;
 
         while (search_start <= full_text.size() &&
                re->Match(full_text, search_start, full_text.size(), re2::RE2::UNANCHORED, submatches, nsubmatch)) {
-            const absl::string_view token = capture_group ? submatches[1] : submatches[0];
+            const re2::StringPiece token = capture_group ? submatches[1] : submatches[0];
             result.matches += 1;
             result.token_bytes += token.size();
 

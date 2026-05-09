@@ -6,7 +6,7 @@ THIRD_PARTY_DIR="${ROOT_DIR}/third_party"
 RE2_SRC_DIR="${THIRD_PARTY_DIR}/re2"
 RE2_BUILD_DIR="${RE2_SRC_DIR}/build"
 RE2_INSTALL_DIR="${ROOT_DIR}/.local/re2"
-RE2_TAG="${RE2_TAG:-2025-11-05}"
+RE2_TAG="${RE2_TAG:-2023-03-01}"
 
 command -v git >/dev/null || { echo "git is required"; exit 1; }
 command -v cmake >/dev/null || { echo "cmake is required"; exit 1; }
@@ -33,6 +33,7 @@ fi
 
 cmake -S "${RE2_SRC_DIR}" -B "${RE2_BUILD_DIR}" \
   -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
   -DCMAKE_INSTALL_PREFIX="${RE2_INSTALL_DIR}" \
   -DRE2_TEST=OFF \
   -DRE2_BENCHMARK=OFF

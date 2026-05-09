@@ -3,13 +3,14 @@
 notes/.venv/
 .local/
 data/
+third_party/
 build/
 re2_demo/build/
 .pytest_cache/
 .DS_Store
 *.prof
 *.tar.gz
+*.so
 __pycache__/
 *.pyc
 notes/.ipynb_checkpoints/
-

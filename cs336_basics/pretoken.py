@@ -206,12 +206,17 @@ def _pretoken_with_pool(
 
 def init_token_freqmap(
     filename: str,
-    desired_num_chunks: int = 4,
-    num_workers: int = 4,
+    desired_num_chunks: int | None = None,
+    num_workers: int | None = None,
     profile_dir: str | None = None,
-    regex_mode: RegexMode = "py",
+    regex_mode: RegexMode = "cpp",
     special_token: bytes = b"<|endoftext|>",
 ) -> FrequencyMap:
+    if num_workers is None:
+        num_workers = max(1, os.cpu_count() or 1)
+    if desired_num_chunks is None:
+        desired_num_chunks = max(1, 4 * num_workers)
+
     start_time = time.perf_counter()
     LOGGER.info(
         "init_token_freqmap start filename=%s requested_chunks=%s requested_workers=%s regex_mode=%s",
