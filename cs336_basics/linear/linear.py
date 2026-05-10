@@ -6,13 +6,21 @@ from torch import Tensor
 
 class Linear(nn.Module):
 
-    def __init__(self, in_features, out_features, device=None, dtype=None):
+    def __init__(
+        self,
+        in_features: int,
+        out_features: int,
+        device: torch.device | None = None,
+        dtype: torch.dtype | None = None,
+    ):
         super().__init__()
-        # I used to use in, out. AI: wrong, just not convention :( 
+        sigma = (2 / (in_features + out_features)) ** 0.5
+        # I used to use in, out. AI: wrong, just not convention :(
         # But `layer.weight.data = weights` in the adapter does make sense.
-        self.weight = nn.Parameter(
-            torch.randn(out_features, in_features, device=device, dtype=dtype)
-        )
+
+        # TODO: this init is from the slides. Check later how it helps with training.
+        self.weight = nn.Parameter(torch.empty(out_features, in_features, device=device, dtype=dtype))
+        nn.init.trunc_normal_(self.weight, mean=0.0, std=sigma, a=-3 * sigma, b=3 * sigma)
 
     def forward(
         self,
