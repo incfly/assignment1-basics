@@ -1,0 +1,19 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.12",
+  "include": [
+    "cs336_basics",
+    "scripts"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    ".venv",
+    "cs336_basics/re_cpp/build",
+    "data",
+    "tests",
+    "third_party"
+  ],
+  "typeCheckingMode": "basic",
+  "reportPrivateImportUsage": "none"
+}
