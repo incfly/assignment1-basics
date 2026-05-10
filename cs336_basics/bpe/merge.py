@@ -5,16 +5,11 @@ import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 # To test, run
 # uv run pytest /Users/incfly/workspace/github.com/incfly/assignment1-basics/tests/test_bpe_merge.py -q
-try:
-    from cs336_basics.bpe.pair_heap import PairHeap, PairKey
-    from cs336_basics.bpe.pretoken import init_token_freqmap, FrequencyMap
-except ImportError:
-    from pair_heap import PairHeap, PairKey
-    from pretoken import init_token_freqmap
+from cs336_basics.bpe.pair_heap import PairHeap, PairKey
+from cs336_basics.bpe.pretoken import init_token_freqmap
 
 LOGGER = logging.getLogger(__name__)
 if not LOGGER.handlers:
@@ -69,8 +64,8 @@ class Node:
     token: int
     # the frequency where this node resides in. i.e. the word.
     freq: int
-    prev: Optional["Node"] = None
-    next: Optional["Node"] = None
+    prev: "Node | None" = None
+    next: "Node | None" = None
     alive: bool = True
 
 
@@ -104,7 +99,7 @@ def init_word_nodes_list(word: bytes, freq: int) -> Node:
     return head
 
 
-type AllPairs = dict[(int,int), PairInfo]
+type AllPairs = dict[tuple[int, int], PairInfo]
 type Merge = tuple[int, int]
 type BytePairs = dict[bytes, PairInfo]
 
@@ -172,7 +167,7 @@ def increment_pair(all_pairs: AllPairs, left: Node, right: Node) -> PairKey:
     return pair_key
 
 
-def decrement_neighbor_pairs(all_pairs: AllPairs, left: Optional[Node], t1: Node, t2: Node, right: Optional[Node]) -> set[PairKey]:
+def decrement_neighbor_pairs(all_pairs: AllPairs, left: Node | None, t1: Node, t2: Node, right: Node | None) -> set[PairKey]:
     changed = set()
     if left is not None and left.alive:
         changed_key = decrement_pair(all_pairs, left, t1)
@@ -188,7 +183,7 @@ def decrement_neighbor_pairs(all_pairs: AllPairs, left: Optional[Node], t1: Node
     return changed
 
 
-def increment_neighbor_pairs(all_pairs: AllPairs, left: Optional[Node], merged: Node, right: Optional[Node]) -> set[PairKey]:
+def increment_neighbor_pairs(all_pairs: AllPairs, left: Node | None, merged: Node, right: Node | None) -> set[PairKey]:
     changed = set()
     if left is not None and left.alive:
         changed.add(increment_pair(all_pairs, left, merged))

@@ -6,7 +6,7 @@ import logging
 import multiprocessing as mp
 from collections import defaultdict
 from pathlib import Path
-from typing import BinaryIO
+from typing import Any, BinaryIO
 
 import regex as re
 
@@ -19,9 +19,9 @@ data: bytes
 split_token: bytes = b"<|endoftext|>"
 worker_profile_dir: str | None = None
 worker_regex_mode: RegexMode = "py"
-worker_py_pattern: re.Pattern[str] | None = None
-worker_cpp_findall = None
-worker_cpp_token_freqmap = None
+worker_py_pattern: Any = None
+worker_cpp_findall: Any = None
+worker_cpp_token_freqmap: Any = None
 
 PY_PRETOKEN_PATTERN = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 # RE2 does not support lookaround, so we use the equivalent final whitespace fallback.
@@ -148,7 +148,6 @@ def _pretoken_worker(bounds: ChunkBounds) -> FrequencyMap:
     start, end = bounds
     share = data[start:end]
     pid = os.getpid()
-    preview = share[:80].decode("utf-8", errors="ignore").replace("\n", "\\n")
     LOGGER.info("pretoken worker start pid=%s bytes=%s regex_mode=%s", pid, end - start, worker_regex_mode)
 
     profiler = cProfile.Profile() if worker_profile_dir is not None else None
@@ -171,6 +170,7 @@ def _pretoken_worker(bounds: ChunkBounds) -> FrequencyMap:
     finally:
         if profiler is not None:
             profiler.disable()
+            assert worker_profile_dir is not None
             profile_path = Path(worker_profile_dir) / f"pretoken-worker-{pid}-{start}-{end}.prof"
             profiler.dump_stats(profile_path)
 
