@@ -113,12 +113,12 @@ def _init_shared_string(
     elif regex_mode == "cpp":
         worker_py_pattern = None
         try:
-            from re2_demo import findall as re2_findall
-            from re2_demo import token_freqmap as re2_token_freqmap
+            from cs336_basics.re_cpp import findall as re2_findall
+            from cs336_basics.re_cpp import token_freqmap as re2_token_freqmap
         except ImportError as exc:
             raise RuntimeError(
-                "regex_mode='cpp' requires building re2_demo first via "
-                "`./scripts/bootstrap_re2_linux.sh` and `PYTHON_BIN=python3 ./scripts/build_re2_demo_linux.sh`."
+                "regex_mode='cpp' requires building cs336_basics.re_cpp first via "
+                "`./scripts/bootstrap_re2_linux.sh` and `PYTHON_BIN=python3 ./scripts/build_re_cpp_linux.sh`."
             ) from exc
         worker_cpp_findall = re2_findall
         worker_cpp_token_freqmap = re2_token_freqmap

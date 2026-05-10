@@ -22,7 +22,7 @@ trap cleanup EXIT
 "$SETSID_BIN" sh -c '
   echo $$ > "$1"
   cd "$5"
-  exec uv run python cs336_basics/bpe_merge.py "$2" \
+  exec uv run python -m cs336_basics.bpe.merge "$2" \
     --vocab-size "$3" --pretoken-worker "$4"
 ' sh "$PID_FILE" "$INPUT_FILE" "$VOCAB_SIZE" "$PRETOKEN_WORKER" "$SCRIPT_DIR" \
   >"$RUN_LOG" 2>&1 &

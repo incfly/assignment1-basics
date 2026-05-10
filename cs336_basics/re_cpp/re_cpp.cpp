@@ -414,21 +414,21 @@ static PyObject* pretokenize(PyObject* self, PyObject* args) {
     return out;
 }
 
-static PyMethodDef re2_demo_methods[] = {
+static PyMethodDef re_cpp_methods[] = {
     {"findall", findall, METH_VARARGS, "Return all non-overlapping full matches using RE2."},
     {"pretokenize", pretokenize, METH_VARARGS, "Return ordered GPT-style pre-tokens."},
     {"token_freqmap", token_freqmap, METH_VARARGS, "Return a token frequency map for a whole chunk using RE2."},
     {nullptr, nullptr, 0, nullptr},
 };
 
-static PyModuleDef re2_demo_module = {
+static PyModuleDef re_cpp_module = {
     PyModuleDef_HEAD_INIT,
-    "_re2demo",
+    "_re_cpp",
     "Minimal Python binding for Google RE2.",
     -1,
-    re2_demo_methods,
+    re_cpp_methods,
 };
 
-PyMODINIT_FUNC PyInit__re2demo(void) {
-    return PyModule_Create(&re2_demo_module);
+PyMODINIT_FUNC PyInit__re_cpp(void) {
+    return PyModule_Create(&re_cpp_module);
 }

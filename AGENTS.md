@@ -34,11 +34,11 @@ To also initialize data during setup:
 DATA_ROOT=/mnt/disks/openweb-data/cs336-data INSTALL_DATA=1 ./scripts/setup_linux.sh
 ```
 
-The setup script installs apt dependencies, installs `uv` if missing, runs `uv sync`, builds RE2, builds the Python `_re2demo` extension, and smoke-tests BPE if `tiny-1000.txt` exists.
+The setup script installs apt dependencies, installs `uv` if missing, runs `uv sync`, builds RE2, builds the Python `cs336_basics.re_cpp._re_cpp` extension, and smoke-tests BPE if `tiny-1000.txt` exists.
 
 ## BPE Defaults
 
-`cs336_basics/bpe_merge.py` defaults to:
+`cs336_basics/bpe/merge.py` defaults to:
 
 ```text
 pretoken_workers = os.cpu_count()
@@ -62,7 +62,7 @@ Linux uses:
 
 ```bash
 ./scripts/bootstrap_re2_linux.sh
-./scripts/build_re2_demo_linux.sh
+./scripts/build_re_cpp_linux.sh
 ```
 
 `bootstrap_re2_linux.sh` pins RE2 to `2023-03-01` because Debian 12's packaged Abseil is too old for newer RE2 tags. It also builds RE2 with `CMAKE_POSITION_INDEPENDENT_CODE=ON` so Python can link the native extension.

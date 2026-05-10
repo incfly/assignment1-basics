@@ -10,10 +10,10 @@ from collections.abc import Iterable, Iterator
 from concurrent.futures import Future, ProcessPoolExecutor, wait, FIRST_COMPLETED
 from typing import TYPE_CHECKING
 
-from cs336_basics.pretoken import PY_PRETOKEN_PATTERN, RegexMode
+from cs336_basics.bpe.pretoken import PY_PRETOKEN_PATTERN, RegexMode
 
 if TYPE_CHECKING:
-    from cs336_basics.bpe_merge import ExternalMerges, ExternalVocab
+    from cs336_basics.bpe.merge import ExternalMerges, ExternalVocab
 
 LOGGER = logging.getLogger(__name__)
 if not LOGGER.handlers:
@@ -119,11 +119,11 @@ class Encoder:
         self.cpp_pretokenize = None
         if regex_mode == "cpp":
             try:
-                from re2_demo import pretokenize as re2_pretokenize
+                from cs336_basics.re_cpp import pretokenize as re2_pretokenize
             except ImportError as exc:
                 raise RuntimeError(
-                    "regex_mode='cpp' requires building re2_demo first via "
-                    "`./scripts/bootstrap_re2_linux.sh` and `PYTHON_BIN=python3 ./scripts/build_re2_demo_linux.sh`."
+                    "regex_mode='cpp' requires building cs336_basics.re_cpp first via "
+                    "`./scripts/bootstrap_re2_linux.sh` and `PYTHON_BIN=python3 ./scripts/build_re_cpp_linux.sh`."
                 ) from exc
             self.cpp_pretokenize = re2_pretokenize
         elif regex_mode != "py":

@@ -5,7 +5,7 @@ notes/.venv/
 data/
 third_party/
 build/
-re2_demo/build/
+cs336_basics/re_cpp/build/
 .pytest_cache/
 .DS_Store
 *.prof

@@ -47,14 +47,14 @@ export PATH="${HOME}/.local/bin:${PATH}"
 
 uv sync
 ./scripts/bootstrap_re2_linux.sh
-./scripts/build_re2_demo_linux.sh
+./scripts/build_re_cpp_linux.sh
 
 if [[ "${INSTALL_DATA}" == "1" ]]; then
   ./scripts/init_data.sh
 fi
 
 if [[ -f "${SMOKE_DATA}" ]]; then
-  uv run python cs336_basics/bpe_merge.py "${SMOKE_DATA}" --vocab-size 300
+  uv run python -m cs336_basics.bpe.merge "${SMOKE_DATA}" --vocab-size 300
 else
   echo "skip smoke test: ${SMOKE_DATA} not found"
   echo "set DATA_ROOT or run INSTALL_DATA=1 ./scripts/setup_linux.sh to initialize data"

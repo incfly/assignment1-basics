@@ -10,8 +10,8 @@ from typing import Optional
 # To test, run
 # uv run pytest /Users/incfly/workspace/github.com/incfly/assignment1-basics/tests/test_bpe_merge.py -q
 try:
-    from cs336_basics.pair_heap import PairHeap, PairKey
-    from cs336_basics.pretoken import init_token_freqmap, FrequencyMap
+    from cs336_basics.bpe.pair_heap import PairHeap, PairKey
+    from cs336_basics.bpe.pretoken import init_token_freqmap, FrequencyMap
 except ImportError:
     from pair_heap import PairHeap, PairKey
     from pretoken import init_token_freqmap
