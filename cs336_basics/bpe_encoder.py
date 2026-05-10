@@ -7,6 +7,7 @@ import regex as re
 import time
 from collections import OrderedDict
 from collections.abc import Iterable, Iterator
+from concurrent.futures import Future, ProcessPoolExecutor, wait, FIRST_COMPLETED
 from typing import TYPE_CHECKING
 
 from cs336_basics.pretoken import PY_PRETOKEN_PATTERN, RegexMode
@@ -21,6 +22,8 @@ if not LOGGER.handlers:
     LOGGER.addHandler(handler)
 LOGGER.setLevel(logging.INFO)
 LOGGER.propagate = False
+
+_WORKER_ENCODER: "Encoder | None" = None
 
 
 def _load_vocab(vocab_filepath: str) -> dict[int, bytes]:
@@ -57,33 +60,25 @@ def _default_data_root() -> Path:
     return Path(os.environ.get("DATA_ROOT", Path(__file__).resolve().parents[1] / "../cs336-data")).resolve()
 
 
-def _iter_docs(path: Path, chunk_chars: int = 8 * 1024 * 1024) -> Iterator[str]:
-    carry = ""
-    with path.open("r", encoding="utf-8", errors="replace") as f:
-        while True:
-            chunk = f.read(chunk_chars)
-            if not chunk:
-                break
-            parts = (carry + chunk).split("<|endoftext|>")
-            yield from (p for p in parts[:-1] if p)
-            carry = parts[-1]
-    if carry:
-        yield carry
+def _default_encoder_workers() -> int:
+    return max(1, os.cpu_count() or 1)
 
 
-def _sample_docs(path: Path, count: int) -> list[str]:
-    docs: list[str] = []
-    for doc in _iter_docs(path):
-        docs.append(doc)
-        if len(docs) >= count:
-            break
-    return docs
+def _resolve_input_path(input_arg: str | None, root: Path, default_name: str = "owt_train.txt") -> Path:
+    if input_arg is None:
+        return root / default_name
+    path = Path(input_arg)
+    return path if path.is_absolute() else root / path
 
 
-def _ratio(tokenizer: "Encoder", docs: list[str]) -> dict[str, float | int]:
-    byte_count = sum(len(doc.encode("utf-8")) for doc in docs)
-    token_count = sum(len(tokenizer.encode(doc)) for doc in docs)
-    return {"bytes": byte_count, "tokens": token_count, "bytes_per_token": byte_count / token_count}
+def _resolve_tokenizer_files(
+    input_path: Path,
+    vocab_arg: str | None,
+    merges_arg: str | None,
+) -> tuple[Path, Path]:
+    vocab_path = Path(vocab_arg) if vocab_arg else input_path.with_name(input_path.name + "-vocab.json")
+    merges_path = Path(merges_arg) if merges_arg else input_path.with_name(input_path.name + "-merge.json")
+    return vocab_path, merges_path
 
 
 class Encoder:
@@ -246,101 +241,264 @@ class Encoder:
         return b"".join(self.vocab[token_id] for token_id in ids).decode("utf-8", errors="replace")
 
 
-def benchmark_file(
-    tokenizer: Encoder,
-    input_path: Path,
-    target_bytes: int,
-    chunk_bytes: int,
-) -> dict[str, float | int | str]:
+def _init_encode_worker(
+    vocab_path: str,
+    merges_path: str,
+    special_tokens: list[str],
+    pretoken_cache_size: int,
+) -> None:
+    global _WORKER_ENCODER
+    _WORKER_ENCODER = Encoder.from_files(
+        vocab_path,
+        merges_path,
+        special_tokens=special_tokens,
+        pretoken_cache_size=pretoken_cache_size,
+    )
+
+
+def _worker_cache_delta(before_hits: int, before_misses: int) -> dict[str, int | float]:
+    assert _WORKER_ENCODER is not None
+    stats = _WORKER_ENCODER.cache_stats()
+    return {
+        "worker_pid": os.getpid(),
+        "pretoken_cache_size": stats["pretoken_cache_size"],
+        "pretoken_cache_entries": stats["pretoken_cache_entries"],
+        "pretoken_cache_hits": int(stats["pretoken_cache_hits"]) - before_hits,
+        "pretoken_cache_misses": int(stats["pretoken_cache_misses"]) - before_misses,
+    }
+
+
+def _encode_chunk_to_part(task: tuple[int, bytes, str]) -> tuple[int, int, int, str, dict[str, int | float]]:
+    idx, data, part_path = task
+    assert _WORKER_ENCODER is not None
+    import numpy as np
+
+    before_hits = _WORKER_ENCODER.pretoken_cache_hits
+    before_misses = _WORKER_ENCODER.pretoken_cache_misses
+    ids = _WORKER_ENCODER.encode(data.decode("utf-8", errors="replace"))
+    np.asarray(ids, dtype=np.uint16).tofile(part_path)
+    return idx, len(data), len(ids), part_path, _worker_cache_delta(before_hits, before_misses)
+
+
+def _read_chunk_tasks(input_path: Path, target_bytes: int, chunk_bytes: int) -> Iterator[tuple[int, bytes]]:
+    separator = b"<|endoftext|>"
     seen = 0
-    tokens = 0
-    start = time.perf_counter()
+    idx = 0
+    carry = b""
+    current_parts: list[bytes] = []
+    current_size = 0
+
+    def flush_current() -> bytes:
+        nonlocal current_parts, current_size
+        block = b"".join(current_parts)
+        current_parts = []
+        current_size = 0
+        return block
+
     with input_path.open("rb") as f:
         while seen < target_bytes:
             data = f.read(min(chunk_bytes, target_bytes - seen))
             if not data:
                 break
-            ids = tokenizer.encode(data.decode("utf-8", errors="replace"))
             seen += len(data)
-            tokens += len(ids)
-            elapsed = time.perf_counter() - start
-            LOGGER.info(
-                "benchmark progress bytes=%s/%s tokens=%s elapsed=%.2fs bytes_per_second=%.2f",
-                seen,
-                target_bytes,
-                tokens,
-                elapsed,
-                seen / elapsed if elapsed else 0.0,
-            )
+            pieces = (carry + data).split(separator)
+            carry = pieces[-1]
+            for piece in pieces[:-1]:
+                segment = piece + separator
+                if current_size and current_size + len(segment) > chunk_bytes:
+                    yield idx, flush_current()
+                    idx += 1
+                current_parts.append(segment)
+                current_size += len(segment)
+
+    if carry:
+        if current_size and current_size + len(carry) > chunk_bytes:
+            yield idx, flush_current()
+            idx += 1
+        current_parts.append(carry)
+        current_size += len(carry)
+    if current_parts:
+        yield idx, flush_current()
+
+
+def _merge_cache_stats(stats: Iterable[dict[str, int | float]], cache_size: int) -> dict[str, int | float]:
+    hits = 0
+    misses = 0
+    worker_entries: dict[int, int] = {}
+    for row in stats:
+        hits += int(row["pretoken_cache_hits"])
+        misses += int(row["pretoken_cache_misses"])
+        worker_pid = int(row.get("worker_pid", 0))
+        worker_entries[worker_pid] = max(worker_entries.get(worker_pid, 0), int(row["pretoken_cache_entries"]))
+    total = hits + misses
+    return {
+        "pretoken_cache_size": cache_size,
+        "pretoken_cache_entries": sum(worker_entries.values()),
+        "pretoken_cache_hits": hits,
+        "pretoken_cache_misses": misses,
+        "pretoken_cache_hit_rate": hits / total if total else 0.0,
+    }
+
+
+def _submit_next_part(
+    pool: ProcessPoolExecutor,
+    task_iter: Iterator[tuple[int, bytes]],
+    part_dir: Path,
+    pending: set[Future[tuple[int, int, int, str, dict[str, int | float]]]],
+) -> bool:
+    try:
+        idx, data = next(task_iter)
+    except StopIteration:
+        return False
+    pending.add(pool.submit(_encode_chunk_to_part, (idx, data, str(part_dir / f"part-{idx:08d}.bin"))))
+    return True
+
+
+def tokenize_file(
+    input_path: Path,
+    output_path: Path,
+    vocab_path: Path,
+    merges_path: Path,
+    target_bytes: int,
+    chunk_bytes: int,
+    encoder_workers: int,
+    pretoken_cache_size: int,
+) -> dict[str, float | int | str]:
+    # File-level "tokenization" is encoding raw text into uint16 token IDs for NN training.
+    import numpy as np
+
+    start = time.perf_counter()
+    if encoder_workers <= 1:
+        tokenizer = Encoder.from_files(
+            str(vocab_path),
+            str(merges_path),
+            special_tokens=["<|endoftext|>"],
+            pretoken_cache_size=pretoken_cache_size,
+        )
+        seen = 0
+        tokens = 0
+        with output_path.open("wb") as out:
+            for _, data in _read_chunk_tasks(input_path, target_bytes, chunk_bytes):
+                ids = tokenizer.encode(data.decode("utf-8", errors="replace"))
+                np.asarray(ids, dtype=np.uint16).tofile(out)
+                seen += len(data)
+                tokens += len(ids)
+                elapsed = time.perf_counter() - start
+                LOGGER.info(
+                    "tokenize progress bytes=%s/%s tokens=%s elapsed=%.2fs bytes_per_second=%.2f",
+                    seen,
+                    target_bytes,
+                    tokens,
+                    elapsed,
+                    seen / elapsed if elapsed else 0.0,
+                )
+        elapsed = time.perf_counter() - start
+        return {
+            "input": str(input_path),
+            "output": str(output_path),
+            "bytes": seen,
+            "tokens": tokens,
+            "seconds": elapsed,
+            "bytes_per_second": seen / elapsed if elapsed else 0.0,
+            "encoder_workers": encoder_workers,
+            **tokenizer.cache_stats(),
+        }
+
+    part_dir = output_path.with_name(output_path.name + ".parts")
+    part_dir.mkdir(parents=True, exist_ok=True)
+    for old_part in part_dir.glob("part-*.bin"):
+        old_part.unlink()
+
+    seen = 0
+    tokens = 0
+    parts: dict[int, str] = {}
+    cache_stats: list[dict[str, int | float]] = []
+    with ProcessPoolExecutor(
+        max_workers=encoder_workers,
+        initializer=_init_encode_worker,
+        initargs=(str(vocab_path), str(merges_path), ["<|endoftext|>"], pretoken_cache_size),
+    ) as pool:
+        task_iter = _read_chunk_tasks(input_path, target_bytes, chunk_bytes)
+        pending: set[Future[tuple[int, int, int, str, dict[str, int | float]]]] = set()
+        for _ in range(encoder_workers * 2):
+            if not _submit_next_part(pool, task_iter, part_dir, pending):
+                break
+        while pending:
+            done, pending = wait(pending, return_when=FIRST_COMPLETED)
+            for future in done:
+                idx, byte_count, token_count, part_path, stats = future.result()
+                _submit_next_part(pool, task_iter, part_dir, pending)
+                seen += byte_count
+                tokens += token_count
+                parts[idx] = part_path
+                cache_stats.append(stats)
+                elapsed = time.perf_counter() - start
+                LOGGER.info(
+                    "parallel tokenize progress chunks=%s bytes=%s/%s tokens=%s elapsed=%.2fs bytes_per_second=%.2f",
+                    len(parts),
+                    seen,
+                    target_bytes,
+                    tokens,
+                    elapsed,
+                    seen / elapsed if elapsed else 0.0,
+                )
+
+    with output_path.open("wb") as out:
+        for idx in sorted(parts):
+            with Path(parts[idx]).open("rb") as part:
+                out.write(part.read())
+    for part_path in parts.values():
+        Path(part_path).unlink()
+    part_dir.rmdir()
+
     elapsed = time.perf_counter() - start
     return {
         "input": str(input_path),
+        "output": str(output_path),
         "bytes": seen,
         "tokens": tokens,
         "seconds": elapsed,
         "bytes_per_second": seen / elapsed if elapsed else 0.0,
-        **tokenizer.cache_stats(),
+        "encoder_workers": encoder_workers,
+        **_merge_cache_stats(cache_stats, pretoken_cache_size),
     }
 
 
 def _main() -> None:
     parser = argparse.ArgumentParser()
-    sub = parser.add_subparsers(dest="cmd", required=True)
-
-    ans = sub.add_parser("answers")
-    ans.add_argument("--data-root", default=str(_default_data_root()))
-    ans.add_argument("--sample-count", type=int, default=10)
-    ans.add_argument("--tiny-vocab-file", "--tiny-vocab", dest="tiny_vocab_file")
-    ans.add_argument("--tiny-merge-file", "--tiny-merges", dest="tiny_merge_file")
-    ans.add_argument("--owt-vocab-file", "--owt-vocab", dest="owt_vocab_file")
-    ans.add_argument("--owt-merge-file", "--owt-merges", dest="owt_merge_file")
-    ans.add_argument("--out")
-
-    bench = sub.add_parser("benchmark")
-    bench.add_argument("--data-root", default=str(_default_data_root()))
-    bench.add_argument("--input")
-    bench.add_argument("--vocab-file", "--vocab", dest="vocab_file")
-    bench.add_argument("--merge-file", "--merges", dest="merge_file")
-    bench.add_argument("--sample-size", "--bytes", dest="sample_size", default="128m")
-    bench.add_argument("--chunk-bytes", type=int, default=8 * 1024 * 1024)
-    bench.add_argument("--pretoken-cache-size", type=int, default=500_000)
-    bench.add_argument("--out")
+    parser.add_argument("input_path", nargs="?")
+    parser.add_argument("--data-root", default=str(_default_data_root()))
+    parser.add_argument("--input", dest="input_flag")
+    parser.add_argument("--output")
+    parser.add_argument("--vocab-file", "--vocab", dest="vocab_file")
+    parser.add_argument("--merge-file", "--merges", dest="merge_file")
+    parser.add_argument("--sample-size", "--bytes", dest="sample_size")
+    parser.add_argument("--chunk-bytes", type=int, default=8 * 1024 * 1024)
+    parser.add_argument("--pretoken-cache-size", type=int, default=500_000)
+    parser.add_argument("--encoder-worker", type=int, default=_default_encoder_workers())
+    parser.add_argument("--serial", action="store_true")
+    parser.add_argument("--out")
     args = parser.parse_args()
 
     root = Path(args.data_root)
-    if args.cmd == "answers":
-        tiny_vocab = Path(args.tiny_vocab_file) if args.tiny_vocab_file else root / "TinyStories-train.txt-vocab.json"
-        tiny_merges = Path(args.tiny_merge_file) if args.tiny_merge_file else root / "TinyStories-train.txt-merge.json"
-        owt_vocab = Path(args.owt_vocab_file) if args.owt_vocab_file else root / "owt_train.txt-vocab.json"
-        owt_merges = Path(args.owt_merge_file) if args.owt_merge_file else root / "owt_train.txt-merge.json"
-        tiny_tok = Encoder.from_files(str(tiny_vocab), str(tiny_merges), special_tokens=["<|endoftext|>"])
-        owt_tok = Encoder.from_files(str(owt_vocab), str(owt_merges), special_tokens=["<|endoftext|>"])
-        tiny_docs = _sample_docs(root / "TinyStories-train.txt", args.sample_count)
-        owt_docs = _sample_docs(root / "owt_train.txt", args.sample_count)
-        result = {
-            "tiny_docs_tiny_tokenizer": _ratio(tiny_tok, tiny_docs),
-            "owt_docs_owt_tokenizer": _ratio(owt_tok, owt_docs),
-            "owt_docs_tiny_tokenizer": _ratio(tiny_tok, owt_docs),
-        }
-        payload = json.dumps(result, indent=2)
-        if args.out:
-            Path(args.out).write_text(payload + "\n", encoding="utf-8")
-        print(payload)
-    elif args.cmd == "benchmark":
-        input_path = Path(args.input) if args.input else root / "owt_train.txt"
-        vocab_path = Path(args.vocab_file) if args.vocab_file else root / "owt_train.txt-vocab.json"
-        merges_path = Path(args.merge_file) if args.merge_file else root / "owt_train.txt-merge.json"
-        tokenizer = Encoder.from_files(
-            str(vocab_path),
-            str(merges_path),
-            special_tokens=["<|endoftext|>"],
-            pretoken_cache_size=args.pretoken_cache_size,
-        )
-        result = benchmark_file(tokenizer, input_path, _parse_size(args.sample_size), args.chunk_bytes)
-        payload = json.dumps(result, indent=2)
-        if args.out:
-            Path(args.out).write_text(payload + "\n", encoding="utf-8")
-        print(payload)
+    input_path = _resolve_input_path(args.input_flag or args.input_path, root)
+    vocab_path, merges_path = _resolve_tokenizer_files(input_path, args.vocab_file, args.merge_file)
+    output_path = Path(args.output) if args.output else input_path.with_name(input_path.name + "-tokenized.bin")
+    target_bytes = _parse_size(args.sample_size) if args.sample_size else input_path.stat().st_size
+    result = tokenize_file(
+        input_path,
+        output_path,
+        vocab_path,
+        merges_path,
+        target_bytes,
+        args.chunk_bytes,
+        1 if args.serial else args.encoder_worker,
+        args.pretoken_cache_size,
+    )
+    payload = json.dumps(result, indent=2)
+    if args.out:
+        Path(args.out).write_text(payload + "\n", encoding="utf-8")
+    print(payload)
 
 
 if __name__ == "__main__":
