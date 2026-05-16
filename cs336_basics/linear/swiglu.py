@@ -3,7 +3,7 @@ import torch.nn as nn
 
 from cs336_basics.linear.linear import Linear
 
-
+# This is feedforward layer!
 # vanila: x -> W1 -> ReLU -> w2, ReLU for non linear part. spicy up the model.
 # otherwise Wx = W1(W2(x)). not adding power.
 # 

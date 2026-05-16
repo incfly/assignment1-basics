@@ -36,3 +36,16 @@ def cross_entropy(
     # The target side cancels log(exp(target_logit)) to just target_logit.
     # The log_sum_exp side cannot cancel because log is outside a sum.
     return (log_sum_exp - target_logits).mean()
+
+
+def scaled_dot_product_attention(
+    Q: Tensor,
+    K: Tensor,
+    V: Tensor,
+    mask: Tensor | None = None,
+) -> Tensor:
+    d_k = Q.shape[-1]
+    scores = Q @ K.transpose(-2, -1) / (d_k**0.5)
+    if mask is not None:
+        scores = scores.masked_fill(~mask, float("-inf"))
+    return softmax(scores, dim=-1) @ V

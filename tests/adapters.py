@@ -118,7 +118,9 @@ def run_scaled_dot_product_attention(
     Returns:
         Float[Tensor, " ... queries d_v"]: Output of SDPA
     """
-    raise NotImplementedError
+    from cs336_basics.linear import scaled_dot_product_attention
+
+    return scaled_dot_product_attention(Q, K, V, mask)
 
 
 def run_multihead_self_attention(
@@ -152,7 +154,19 @@ def run_multihead_self_attention(
         Float[Tensor, " ... sequence_length d_model"]: Tensor with the output of running your optimized, batched multi-headed attention
         implementation with the given QKV projection weights and input features.
     """
-    raise NotImplementedError
+    from cs336_basics.linear import MultiheadSelfAttention
+
+    attention = MultiheadSelfAttention(
+        d_model=d_model,
+        num_heads=num_heads,
+        device=q_proj_weight.device,
+        dtype=q_proj_weight.dtype,
+    )
+    attention.q_proj.weight.data = q_proj_weight
+    attention.k_proj.weight.data = k_proj_weight
+    attention.v_proj.weight.data = v_proj_weight
+    attention.output_proj.weight.data = o_proj_weight
+    return attention(in_features)
 
 
 def run_multihead_self_attention_with_rope(
@@ -192,7 +206,21 @@ def run_multihead_self_attention_with_rope(
         Float[Tensor, " ... sequence_length d_model"]: Tensor with the output of running your optimized, batched multi-headed attention
         implementation with the given QKV projection weights and input features.
     """
-    raise NotImplementedError
+    from cs336_basics.linear import MultiheadSelfAttention
+
+    attention = MultiheadSelfAttention(
+        d_model=d_model,
+        num_heads=num_heads,
+        max_seq_len=max_seq_len,
+        theta=theta,
+        device=q_proj_weight.device,
+        dtype=q_proj_weight.dtype,
+    )
+    attention.q_proj.weight.data = q_proj_weight
+    attention.k_proj.weight.data = k_proj_weight
+    attention.v_proj.weight.data = v_proj_weight
+    attention.output_proj.weight.data = o_proj_weight
+    return attention(in_features, token_positions)
 
 
 def run_rope(
@@ -290,7 +318,27 @@ def run_transformer_block(
         Float[Tensor, "batch sequence_length d_model"] Tensor with the output of
         running the Transformer block on the input features while using RoPE.
     """
-    raise NotImplementedError
+    from cs336_basics.linear import TransformerBlock
+
+    block = TransformerBlock(
+        d_model=d_model,
+        num_heads=num_heads,
+        d_ff=d_ff,
+        max_seq_len=max_seq_len,
+        theta=theta,
+        device=in_features.device,
+        dtype=in_features.dtype,
+    )
+    block.attn.q_proj.weight.data = weights["attn.q_proj.weight"]
+    block.attn.k_proj.weight.data = weights["attn.k_proj.weight"]
+    block.attn.v_proj.weight.data = weights["attn.v_proj.weight"]
+    block.attn.output_proj.weight.data = weights["attn.output_proj.weight"]
+    block.ln1.weight.data = weights["ln1.weight"]
+    block.ffn.w1.weight.data = weights["ffn.w1.weight"]
+    block.ffn.w2.weight.data = weights["ffn.w2.weight"]
+    block.ffn.w3.weight.data = weights["ffn.w3.weight"]
+    block.ln2.weight.data = weights["ln2.weight"]
+    return block(in_features)
 
 
 def run_transformer_lm(
@@ -372,7 +420,21 @@ def run_transformer_lm(
         Float[Tensor, "batch_size sequence_length vocab_size"]: Tensor with the predicted unnormalized
         next-word distribution for each token.
     """
-    raise NotImplementedError
+    from cs336_basics.linear import TransformerLM
+
+    model = TransformerLM(
+        vocab_size=vocab_size,
+        context_length=context_length,
+        d_model=d_model,
+        num_layers=num_layers,
+        num_heads=num_heads,
+        d_ff=d_ff,
+        rope_theta=rope_theta,
+        device=weights["token_embeddings.weight"].device,
+        dtype=weights["token_embeddings.weight"].dtype,
+    )
+    model.load_state_dict(weights)
+    return model(in_indices)
 
 
 def run_rmsnorm(
@@ -486,7 +548,9 @@ def run_gradient_clipping(parameters: Iterable[torch.nn.Parameter], max_l2_norm:
 
     The gradients of the parameters (parameter.grad) should be modified in-place.
     """
-    raise NotImplementedError
+    from cs336_basics.optim import gradient_clipping
+
+    gradient_clipping(parameters, max_l2_norm)
 
 
 def get_adamw_cls() -> Any:
