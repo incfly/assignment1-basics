@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from cs336_basics.linear.attention import MultiheadSelfAttention
-from cs336_basics.linear.prenorm import RMSNorm
-from cs336_basics.linear.swiglu import SwiGLU
+from cs336_basics.model.attention import MultiheadSelfAttention
+from cs336_basics.model.prenorm import RMSNorm
+from cs336_basics.model.swiglu import SwiGLU
 
 
 class TransformerBlock(nn.Module):

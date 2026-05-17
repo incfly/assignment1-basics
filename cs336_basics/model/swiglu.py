@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from cs336_basics.linear.linear import Linear
+from cs336_basics.model.linear import Linear
 
 # This is feedforward layer!
 # vanila: x -> W1 -> ReLU -> w2, ReLU for non linear part. spicy up the model.

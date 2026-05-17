@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from cs336_basics.linear.block import TransformerBlock
-from cs336_basics.linear.embedding import Embedding
-from cs336_basics.linear.linear import Linear
-from cs336_basics.linear.prenorm import RMSNorm
+from cs336_basics.model.block import TransformerBlock
+from cs336_basics.model.embedding import Embedding
+from cs336_basics.model.linear import Linear
+from cs336_basics.model.prenorm import RMSNorm
 
 
 class TransformerLM(nn.Module):

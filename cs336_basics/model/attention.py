@@ -4,9 +4,9 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from cs336_basics.linear.linear import Linear
-from cs336_basics.linear.rope import RoPE
-from cs336_basics.linear.softmax import scaled_dot_product_attention
+from cs336_basics.model.linear import Linear
+from cs336_basics.model.rope import RoPE
+from cs336_basics.model.softmax import scaled_dot_product_attention
 
 
 class MultiheadSelfAttention(nn.Module):
