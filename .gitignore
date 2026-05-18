@@ -170,3 +170,5 @@ third_party/
 data/
 .vscode/
 *.prof
+runs/
+checkpoints/

@@ -24,8 +24,9 @@ def load_checkpoint(
     src: str | os.PathLike | BinaryIO | IO[bytes],
     model: torch.nn.Module,
     optimizer: torch.optim.Optimizer,
+    map_location: str | torch.device | None = None,
 ) -> int:
-    checkpoint = torch.load(src)
+    checkpoint = torch.load(src, map_location=map_location)
     model.load_state_dict(checkpoint["model"])
     optimizer.load_state_dict(checkpoint["optimizer"])
     return checkpoint["iteration"]
