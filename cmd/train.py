@@ -78,7 +78,7 @@ def _evaluate(
     return sum(losses) / len(losses)
 
 
-def train(config: dict[str, Any], config_path: Path) -> None:
+def train(config: dict[str, Any], config_path: Path) -> Path:
     data_cfg = _section(config, "data")
     model_cfg = _section(config, "model")
     opt_cfg = _section(config, "optimizer")
@@ -123,6 +123,7 @@ def train(config: dict[str, Any], config_path: Path) -> None:
     tokens_per_iteration = batch_size * context_length
     print(f"run_dir={run_dir}")
 
+    start_iteration = iteration
     start = time.time()
     model.train()
     while iteration < max_iters:
@@ -138,6 +139,17 @@ def train(config: dict[str, Any], config_path: Path) -> None:
         x, y = get_batch(train_data, batch_size, context_length, device)
         optimizer.zero_grad()
         loss = cross_entropy(model(x), y)
+        if not torch.isfinite(loss):
+            _write_metric(
+                metrics_path,
+                {
+                    "iter": iteration,
+                    "event": "diverged",
+                    "loss": float(loss.item()),
+                    "elapsed_sec": time.time() - start,
+                },
+            )
+            raise RuntimeError(f"non-finite loss at iter={iteration}: {loss.item()}")
         loss.backward()
         if max_grad_norm is not None:
             gradient_clipping(model.parameters(), float(max_grad_norm))
@@ -146,7 +158,8 @@ def train(config: dict[str, Any], config_path: Path) -> None:
 
         if iteration % log_every == 0:
             elapsed = time.time() - start
-            iter_sec = elapsed / max(iteration, 1)
+            iterations_this_run = iteration - start_iteration
+            iter_sec = elapsed / max(iterations_this_run, 1)
             tokens_seen = iteration * tokens_per_iteration
             print(f"iter={iteration} train_loss={loss.item():.4f} lr={lr:.6g} elapsed={elapsed:.1f}s")
             _write_metric(
@@ -159,6 +172,7 @@ def train(config: dict[str, Any], config_path: Path) -> None:
                     "elapsed_sec": elapsed,
                     "iter_sec": iter_sec,
                     "tokens_seen": tokens_seen,
+                    "run_tokens_seen": iterations_this_run * tokens_per_iteration,
                     "batch_size": batch_size,
                     "context_length": context_length,
                     "device": device,
@@ -166,8 +180,9 @@ def train(config: dict[str, Any], config_path: Path) -> None:
             )
 
         if valid_data is not None and iteration % eval_every == 0:
-            elapsed = time.time() - start
             val_loss = _evaluate(model, valid_data, batch_size, context_length, device, eval_iters)
+            elapsed = time.time() - start
+            iterations_this_run = iteration - start_iteration
             print(f"iter={iteration} val_loss={val_loss:.4f}")
             _write_metric(
                 metrics_path,
@@ -177,8 +192,9 @@ def train(config: dict[str, Any], config_path: Path) -> None:
                     "loss": val_loss,
                     "lr": lr,
                     "elapsed_sec": elapsed,
-                    "iter_sec": elapsed / max(iteration, 1),
+                    "iter_sec": elapsed / max(iterations_this_run, 1),
                     "tokens_seen": iteration * tokens_per_iteration,
+                    "run_tokens_seen": iterations_this_run * tokens_per_iteration,
                     "batch_size": batch_size,
                     "context_length": context_length,
                     "eval_iters": eval_iters,
@@ -200,6 +216,17 @@ def train(config: dict[str, Any], config_path: Path) -> None:
                     "elapsed_sec": time.time() - start,
                 },
             )
+
+    _write_metric(
+        metrics_path,
+        {
+            "iter": iteration,
+            "event": "finished",
+            "elapsed_sec": time.time() - start,
+            "run_tokens_seen": (iteration - start_iteration) * tokens_per_iteration,
+        },
+    )
+    return run_dir
 
 
 def main() -> None:
