@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="680" viewBox="0 0 1120 680">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="92" y="34" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#111827">Validation Loss by Learning Rate</text>
+<text x="92" y="58" font-family="Arial, sans-serif" font-size="13" fill="#4b5563">TinyStories LR sweep and refine runs</text>
+<rect x="92" y="64" width="738" height="530" fill="#f8fafc" stroke="#d1d5db"/>
+<line x1="92" y1="594.0" x2="830" y2="594.0" stroke="#e5e7eb"/>
+<text x="80" y="598.0" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">1.50</text>
+<line x1="92" y1="505.7" x2="830" y2="505.7" stroke="#e5e7eb"/>
+<text x="80" y="509.7" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">2.23</text>
+<line x1="92" y1="417.3" x2="830" y2="417.3" stroke="#e5e7eb"/>
+<text x="80" y="421.3" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">2.95</text>
+<line x1="92" y1="329.0" x2="830" y2="329.0" stroke="#e5e7eb"/>
+<text x="80" y="333.0" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">3.67</text>
+<line x1="92" y1="240.7" x2="830" y2="240.7" stroke="#e5e7eb"/>
+<text x="80" y="244.7" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">4.39</text>
+<line x1="92" y1="152.3" x2="830" y2="152.3" stroke="#e5e7eb"/>
+<text x="80" y="156.3" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">5.12</text>
+<line x1="92" y1="64.0" x2="830" y2="64.0" stroke="#e5e7eb"/>
+<text x="80" y="68.0" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#374151">5.84</text>
+<line x1="92.0" y1="64" x2="92.0" y2="594" stroke="#eef2f7"/>
+<text x="92.0" y="618" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">0</text>
+<line x1="215.0" y1="64" x2="215.0" y2="594" stroke="#eef2f7"/>
+<text x="215.0" y="618" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">500</text>
+<line x1="338.0" y1="64" x2="338.0" y2="594" stroke="#eef2f7"/>
+<text x="338.0" y="618" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">1000</text>
+<line x1="461.0" y1="64" x2="461.0" y2="594" stroke="#eef2f7"/>
+<text x="461.0" y="618" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">1500</text>
+<line x1="584.0" y1="64" x2="584.0" y2="594" stroke="#eef2f7"/>
+<text x="584.0" y="618" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">2000</text>
+<line x1="707.0" y1="64" x2="707.0" y2="594" stroke="#eef2f7"/>
+<text x="707.0" y="618" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">2500</text>
+<line x1="830.0" y1="64" x2="830.0" y2="594" stroke="#eef2f7"/>
+<text x="830.0" y="618" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#374151">3000</text>
+<text x="461.0" y="656" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#111827">iteration</text>
+<text x="24" y="329.0" transform="rotate(-90 24 329.0)" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#111827">valid loss</text>
+<polyline fill="none" stroke="#2563eb" stroke-width="2.6" opacity="0.92" points="116.6,92.4 141.2,257.2 165.8,321.3 190.4,354.7 215.0,375.7 239.6,391.0 264.2,405.7 288.8,417.7 313.4,424.7 338.0,432.2 362.6,435.8 387.2,441.2 411.8,444.1 436.4,452.7 461.0,458.2 485.6,458.1 510.2,456.7 534.8,462.1 559.4,464.7 584.0,467.3 608.6,467.5 633.2,469.3 657.8,471.3 682.4,470.7 707.0,475.1 731.6,474.4 756.2,471.9 780.8,474.9 805.4,471.2 830.0,477.6"/>
+<line x1="858" y1="84" x2="886" y2="84" stroke="#2563eb" stroke-width="3"/>
+<text x="896" y="88" font-family="Arial, sans-serif" font-size="13" fill="#111827">lr=0.0001</text>
+<text x="976" y="88" font-family="Arial, sans-serif" font-size="11" fill="#64748b">sweep-20260518-060009</text>
+<polyline fill="none" stroke="#16a34a" stroke-width="2.6" opacity="0.92" points="116.6,246.7 141.2,355.1 165.8,405.5 190.4,428.3 215.0,443.9 239.6,453.7 264.2,466.0 288.8,475.3 313.4,480.9 338.0,488.7 362.6,490.1 387.2,496.9 411.8,498.4 436.4,507.0 461.0,512.1 485.6,513.0 510.2,510.6 534.8,517.5 559.4,520.4 584.0,522.4 608.6,523.2 633.2,524.4 657.8,527.6 682.4,527.4 707.0,531.6 731.6,530.7 756.2,530.0 780.8,531.3 805.4,528.8 830.0,534.1"/>
+<line x1="858" y1="112" x2="886" y2="112" stroke="#16a34a" stroke-width="3"/>
+<text x="896" y="116" font-family="Arial, sans-serif" font-size="13" fill="#111827">lr=0.0003</text>
+<text x="976" y="116" font-family="Arial, sans-serif" font-size="11" fill="#64748b">sweep-20260518-060009</text>
+<polyline fill="none" stroke="#f59e0b" stroke-width="2.6" opacity="0.92" points="116.6,317.7 141.2,401.2 165.8,442.1 190.4,461.6 215.0,474.2 239.6,482.5 264.2,494.1 288.8,503.3 313.4,507.7 338.0,516.3 362.6,517.0 387.2,523.7 411.8,525.3 436.4,532.8 461.0,537.2 485.6,538.7 510.2,535.4 534.8,542.5 559.4,545.6 584.0,547.5 608.6,548.3 633.2,549.8 657.8,552.8 682.4,552.7 707.0,557.2 731.6,556.2 756.2,555.8 780.8,557.4 805.4,555.2 830.0,559.3"/>
+<line x1="858" y1="140" x2="886" y2="140" stroke="#f59e0b" stroke-width="3"/>
+<text x="896" y="144" font-family="Arial, sans-serif" font-size="13" fill="#111827">lr=0.0007</text>
+<text x="976" y="144" font-family="Arial, sans-serif" font-size="11" fill="#64748b">refine-20260518-062114</text>
+<polyline fill="none" stroke="#dc2626" stroke-width="2.6" opacity="0.92" points="116.6,336.4 141.2,413.9 165.8,451.0 190.4,466.8 215.0,480.7 239.6,488.7 264.2,499.5 288.8,508.0 313.4,512.6 338.0,520.6 362.6,520.8 387.2,527.3 411.8,528.9 436.4,535.9 461.0,540.6 485.6,542.5 510.2,539.2 534.8,546.3 559.4,549.6 584.0,551.5 608.6,553.1 633.2,554.0 657.8,557.0 682.4,557.7 707.0,561.6 731.6,561.1 756.2,560.8 780.8,562.2 805.4,560.4 830.0,564.4"/>
+<line x1="858" y1="168" x2="886" y2="168" stroke="#dc2626" stroke-width="3"/>
+<text x="896" y="172" font-family="Arial, sans-serif" font-size="13" fill="#111827">lr=0.001</text>
+<text x="976" y="172" font-family="Arial, sans-serif" font-size="11" fill="#64748b">sweep-20260518-060009</text>
+<polyline fill="none" stroke="#7c3aed" stroke-width="2.6" opacity="0.92" points="116.6,354.7 141.2,421.6 165.8,454.2 190.4,470.1 215.0,481.6 239.6,488.9 264.2,499.3 288.8,506.7 313.4,511.4 338.0,519.8 362.6,519.2 387.2,526.1 411.8,528.0 436.4,535.3 461.0,540.0 485.6,541.7 510.2,538.9 534.8,545.9 559.4,549.5 584.0,551.5 608.6,553.0 633.2,554.8 657.8,557.6 682.4,559.0 707.0,562.8 731.6,562.1 756.2,562.3 780.8,563.6 805.4,561.7 830.0,565.6"/>
+<line x1="858" y1="196" x2="886" y2="196" stroke="#7c3aed" stroke-width="3"/>
+<text x="896" y="200" font-family="Arial, sans-serif" font-size="13" fill="#111827">lr=0.0015</text>
+<text x="976" y="200" font-family="Arial, sans-serif" font-size="11" fill="#64748b">refine-20260518-062114</text>
+<polyline fill="none" stroke="#0891b2" stroke-width="2.6" opacity="0.92" points="116.6,368.3 141.2,413.7 165.8,439.5 190.4,449.2 215.0,457.6 239.6,460.2 264.2,466.7 288.8,471.1 313.4,473.5 338.0,478.8 362.6,475.1 387.2,481.3 411.8,481.6 436.4,489.6 461.0,493.7 485.6,494.1 510.2,493.2 534.8,500.5 559.4,504.2 584.0,506.6 608.6,506.8 633.2,509.6 657.8,513.1 682.4,513.6 707.0,517.8 731.6,518.5 756.2,517.1 780.8,519.4 805.4,517.1 830.0,523.0"/>
+<line x1="858" y1="224" x2="886" y2="224" stroke="#0891b2" stroke-width="3"/>
+<text x="896" y="228" font-family="Arial, sans-serif" font-size="13" fill="#111827">lr=0.003</text>
+<text x="976" y="228" font-family="Arial, sans-serif" font-size="11" fill="#64748b">sweep-20260518-060009</text>
+<polyline fill="none" stroke="#db2777" stroke-width="2.6" opacity="0.92" points="116.6,322.2 141.2,344.2 165.8,352.2 190.4,329.2 215.0,358.5 239.6,326.7 264.2,308.1 288.8,290.1 313.4,322.3 338.0,354.8 362.6,355.5 387.2,352.3 411.8,281.7 436.4,329.0 461.0,362.5 485.6,363.1 510.2,360.5 534.8,368.8 559.4,375.4"/>
+<line x1="858" y1="252" x2="886" y2="252" stroke="#db2777" stroke-width="3"/>
+<text x="896" y="256" font-family="Arial, sans-serif" font-size="13" fill="#111827">lr=0.01</text>
+<text x="976" y="256" font-family="Arial, sans-serif" font-size="11" fill="#64748b">sweep-20260518-060009</text>
+</svg>

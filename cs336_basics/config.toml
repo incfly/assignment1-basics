@@ -29,3 +29,12 @@ eval_iters = 20
 checkpoint_every = 1000
 checkpoint_dir = "checkpoints"
 resume_from = "checkpoints/ckpt_1000.pt"
+
+[generation]
+checkpoint = "../checkpoints/ckpt_1000.pt"
+prompt = "Once upon a time"
+max_new_tokens = 100
+temperature = 1.0
+top_p = 0.9
+seed = 0
+device = "cpu"
