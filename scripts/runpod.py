@@ -2,21 +2,28 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import shlex
 import shutil
 import subprocess
+import time
 import urllib.request
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 DEFAULT_DATA_FILES = (
+    "TinyStories-train.txt-vocab.json",
+    "TinyStories-train.txt-merge.json",
     "TinyStories-train.txt-tokenized.bin",
+    "TinyStories-train.txt-tokenized.json",
     "TinyStories-valid.txt-tokenized.bin",
+    "TinyStories-valid.txt-tokenized.json",
 )
 
 
@@ -49,6 +56,20 @@ class Target:
     def rsync_ssh(self) -> str:
         return " ".join(shlex.quote(part) for part in self.ssh_args()[:-1])
 
+    def scp_args(self) -> list[str]:
+        args = [
+            "scp",
+            "-P",
+            self.port,
+            "-o",
+            "StrictHostKeyChecking=accept-new",
+            "-o",
+            f"UserKnownHostsFile={Path.home() / '.ssh/runpod_known_hosts'}",
+        ]
+        if self.key != "-":
+            args.extend(["-i", self.key])
+        return args
+
 
 def cred_path() -> Path:
     return Path(os.environ.get("RUNPOD_CRED_FILE", "~/workspace/creds/runpods-cred.txt")).expanduser()
@@ -80,6 +101,23 @@ def api_key() -> str:
     if env.get("RUNPOD_API_KEY"):
         return env["RUNPOD_API_KEY"]
     return text
+
+
+def pod_id_file() -> Path:
+    return Path(os.environ.get("RUNPOD_POD_ID_FILE", REPO_ROOT / ".runpod_pod_id")).expanduser()
+
+
+def saved_pod_id() -> str | None:
+    path = pod_id_file()
+    if path.exists():
+        pod_id = path.read_text(encoding="utf-8").strip()
+        if pod_id:
+            return pod_id
+    return None
+
+
+def write_pod_id(pod_id: str) -> None:
+    pod_id_file().write_text(pod_id + "\n", encoding="utf-8")
 
 
 def default_key() -> str:
@@ -160,7 +198,7 @@ def resolve_from_api_key(api_key: str) -> Target:
     if payload.get("errors"):
         raise SystemExit(f"RunPod API error: {payload['errors']}")
 
-    target_pod = os.environ.get("RUNPOD_POD_ID")
+    target_pod = os.environ.get("RUNPOD_POD_ID") or saved_pod_id()
     pods = payload.get("data", {}).get("myself", {}).get("pods", [])
     for pod in pods:
         if target_pod and pod.get("id") != target_pod:
@@ -210,6 +248,55 @@ def run(cmd: list[str], *, check: bool = True, env: dict[str, str] | None = None
     return subprocess.run(cmd, check=check, env=env)
 
 
+def run_capture(cmd: list[str], *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
+    print("+ " + " ".join(shlex.quote(part) for part in cmd), flush=True)
+    result = subprocess.run(cmd, check=False, env=env, text=True, capture_output=True)
+    if result.returncode != 0:
+        if result.stdout:
+            print(result.stdout, end="")
+        if result.stderr:
+            print(result.stderr, end="")
+        raise SystemExit(result.returncode)
+    return result
+
+
+def load_blob_manager():
+    path = SCRIPT_DIR / "blob-manager.py"
+    spec = importlib.util.spec_from_file_location("blob_manager", path)
+    if spec is None or spec.loader is None:
+        raise SystemExit(f"could not load {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def refresh_gcs_token(target: Target) -> None:
+    blob_manager = load_blob_manager()
+    local_path = blob_manager.refresh_gcs_access_token()
+    remote_path = str(blob_manager.GCS_ACCESS_TOKEN_FILE)
+    remote(target, f"mkdir -p {shlex.quote(str(Path(remote_path).parent))}")
+    run([*target.scp_args(), str(local_path), f"{target.address}:{remote_path}"])
+    remote(target, f"chmod 600 {shlex.quote(remote_path)}")
+
+
+def extract_pod_id(value) -> str | None:
+    if isinstance(value, dict):
+        for key in ("id", "podId"):
+            found = value.get(key)
+            if isinstance(found, str) and found:
+                return found
+        for child in value.values():
+            found = extract_pod_id(child)
+            if found:
+                return found
+    if isinstance(value, list):
+        for child in value:
+            found = extract_pod_id(child)
+            if found:
+                return found
+    return None
+
+
 def remote(target: Target, command: str) -> None:
     run([*target.ssh_args(), command])
 
@@ -219,7 +306,7 @@ def ensure_remote_dir(target: Target, path: str) -> None:
 
 
 def rsync(target: Target, src: str, dest: str, args: argparse.Namespace, extra: list[str] | None = None) -> None:
-    cmd = ["rsync", "-avz", "--progress"]
+    cmd = ["rsync", "-avz", "--no-owner", "--no-group", "--progress"]
     if args.dry_run:
         cmd.append("--dry-run")
     if args.delete:
@@ -296,6 +383,77 @@ def cmd_resolve(_args: argparse.Namespace) -> None:
     print(target.user, target.host, target.port, target.key)
 
 
+def cmd_create(args: argparse.Namespace) -> None:
+    if not shutil.which("runpodctl"):
+        raise SystemExit("runpodctl not found; install it or create the pod from the RunPod console")
+    if args.image and args.template_id:
+        raise SystemExit("choose only one of --image or --template-id")
+
+    env = os.environ.copy()
+    env["RUNPOD_API_KEY"] = api_key()
+    cmd = [
+        "runpodctl",
+        "pod",
+        "create",
+        "--name",
+        args.name,
+        "--gpu-id",
+        args.gpu_id,
+        "--gpu-count",
+        str(args.gpu_count),
+        "--cloud-type",
+        args.cloud_type,
+        "--container-disk-in-gb",
+        str(args.container_disk_in_gb),
+        "--volume-in-gb",
+        str(args.volume_in_gb),
+        "--volume-mount-path",
+        args.volume_mount_path,
+        "--ports",
+        args.ports,
+        "-o",
+        "json",
+    ]
+    if args.image:
+        cmd.extend(["--image", args.image])
+    else:
+        cmd.extend(["--template-id", args.template_id])
+    if args.data_center_ids:
+        cmd.extend(["--data-center-ids", args.data_center_ids])
+    if args.public_ip:
+        cmd.append("--public-ip")
+    if args.global_networking:
+        cmd.append("--global-networking")
+
+    result = run_capture(cmd, env=env)
+    if result.stderr:
+        print(result.stderr, end="")
+    print(result.stdout, end="")
+
+    pod_id = None
+    try:
+        pod_id = extract_pod_id(json.loads(result.stdout))
+    except json.JSONDecodeError:
+        pass
+    if pod_id:
+        write_pod_id(pod_id)
+        print(f"saved pod id {pod_id} to {pod_id_file()}")
+
+    if not args.wait_ssh:
+        return
+
+    deadline = time.time() + args.wait_ssh_timeout
+    while time.time() < deadline:
+        try:
+            target = resolve_from_api_key(env["RUNPOD_API_KEY"])
+            print(f"ssh ready: {target.user} {target.host} {target.port} {target.key}")
+            return
+        except SystemExit as exc:
+            print(f"waiting for ssh: {exc}")
+            time.sleep(args.wait_ssh_interval)
+    raise SystemExit("timed out waiting for SSH; the pod may still be starting")
+
+
 def cmd_ssh(args: argparse.Namespace) -> None:
     target = resolve_target()
     command = " ".join(shlex.quote(part) for part in args.command)
@@ -327,11 +485,16 @@ def cmd_setup(args: argparse.Namespace) -> None:
             sync_code(target, "push", args)
         if data:
             sync_data(target, "push", args)
+    refresh_gcs_token(target)
     remote(target, f"cd {shlex.quote(args.remote_dir)} && ./scripts/setup_train_linux.sh")
 
 
+def cmd_refresh_gcs_token(_args: argparse.Namespace) -> None:
+    refresh_gcs_token(resolve_target())
+
+
 def cmd_stop(args: argparse.Namespace) -> None:
-    pod_id = args.pod_id or os.environ.get("RUNPOD_POD_ID")
+    pod_id = args.pod_id or os.environ.get("RUNPOD_POD_ID") or saved_pod_id()
     if not pod_id:
         key = api_key()
         payload = query_pods(key)
@@ -384,6 +547,25 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="RunPod helper for code, data, setup, and artifacts.")
     sub = parser.add_subparsers(dest="command", required=True)
 
+    p = sub.add_parser("create", help="create a RunPod pod and remember its pod id")
+    p.add_argument("--name", default=f"assignment1-basics-{datetime.now().strftime('%Y%m%d-%H%M%S')}")
+    p.add_argument("--gpu-id", default=os.environ.get("RUNPOD_GPU_ID", "NVIDIA GeForce RTX 4070"))
+    p.add_argument("--gpu-count", type=int, default=1)
+    p.add_argument("--cloud-type", default=os.environ.get("RUNPOD_CLOUD_TYPE", "COMMUNITY"))
+    p.add_argument("--template-id", default=os.environ.get("RUNPOD_TEMPLATE_ID", "runpod-torch-v280"))
+    p.add_argument("--image", default=os.environ.get("RUNPOD_IMAGE"))
+    p.add_argument("--data-center-ids", default=os.environ.get("RUNPOD_DATA_CENTER_IDS"))
+    p.add_argument("--container-disk-in-gb", type=int, default=30)
+    p.add_argument("--volume-in-gb", type=int, default=20)
+    p.add_argument("--volume-mount-path", default="/workspace")
+    p.add_argument("--ports", default="22/tcp")
+    p.add_argument("--public-ip", action="store_true")
+    p.add_argument("--global-networking", action="store_true")
+    p.add_argument("--no-wait-ssh", action="store_false", dest="wait_ssh")
+    p.add_argument("--wait-ssh-timeout", type=int, default=600)
+    p.add_argument("--wait-ssh-interval", type=int, default=10)
+    p.set_defaults(func=cmd_create, wait_ssh=True)
+
     p = sub.add_parser("resolve", help="print resolved user host port key")
     p.set_defaults(func=cmd_resolve)
 
@@ -400,6 +582,9 @@ def main() -> None:
     add_sync_flags(p)
     p.add_argument("--no-sync", action="store_true")
     p.set_defaults(func=cmd_setup)
+
+    p = sub.add_parser("refresh-gcs-token", help="refresh and copy the GCS token to the current RunPod pod")
+    p.set_defaults(func=cmd_refresh_gcs_token)
 
     p = sub.add_parser("stop", help="stop the current RunPod pod")
     p.add_argument("--pod-id", default=None)

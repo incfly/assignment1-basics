@@ -89,6 +89,56 @@ Keep it simple. No W&B. Use existing `cmd/train.py` metrics logging.
 
 ## RunPod Workflow
 
+Preferred RunPod target for this experiment:
+
+```text
+First choice: RTX 4070, if available.
+Similar small-GPU fallback: NVIDIA L4 in US-MO-2.
+Other close fallbacks: RTX A4000, RTX 4000 Ada, RTX A5000.
+```
+
+As of 2026-05-30, RTX 4070 was not rentable from RunPod even when requested
+directly. An RTX A4000 rented successfully, but landed in Sweden and the
+TinyStories tokenized train bin upload was too slow. A US L4 in `US-MO-2`
+rented successfully and is a reasonable 24 GB fallback for batch-size 16.
+
+For best practical availability from the US, try regions in this order:
+
+```text
+US-CA-2  broad workstation/high-end catalog; try RTX 4000 Ada or RTX A5000
+US-IL-1  broad workstation catalog; try RTX A5000 or RTX 4090 if needed
+US-MO-2  L4 available; good small-GPU fallback
+US-GA-1  RTX A4000 advertised, but rental may be stale
+US-KS-2  broad high-end catalog if cost is less important
+```
+
+If those fail, try `EU-RO-1`, `EUR-IS-1`, or `EUR-IS-2` for small GPU
+availability. Avoid distant regions for this data-heavy workflow unless no US
+region can rent a suitable GPU; SSH upload of the 1.08 GB train bin can dominate
+the experiment.
+
+Create a fallback pod explicitly, for example:
+
+```bash
+./scripts/runpod.py create \
+  --gpu-id "NVIDIA L4" \
+  --cloud-type SECURE \
+  --data-center-ids US-MO-2
+```
+
+TinyStories is staged in GCS:
+
+```text
+gs://cs336-artifacts/lab1/tinystory
+```
+
+On a pod, prefer pulling TinyStories from GCS instead of uploading over SSH:
+
+```bash
+mkdir -p /workspace/cs336-data/tinystory
+gcloud storage rsync gs://cs336-artifacts/lab1/tinystory /workspace/cs336-data/tinystory --recursive
+```
+
 Prepare pod:
 
 ```bash
